@@ -4,4 +4,4 @@ set -eu
 
 cd $(dirname "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)")
 
-docker-compose run --rm db mysql --defaults-extra-file="//dbaccess.cnf" todo_with_clean_architecture
+docker-compose run --rm db mysql --defaults-extra-file="//dbaccess.cnf" todo_with_usecase_architecture

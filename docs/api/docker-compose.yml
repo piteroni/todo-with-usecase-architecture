@@ -7,6 +7,6 @@ services:
     ports:
       - "8001:8080"
     volumes:
-      - ./todo-with-clean-architecture.yml:/todo-with-clean-architecture.yml
+      - ./todo-with-usecase-architecture.yml:/todo-with-usecase-architecture.yml
     environment:
-      SWAGGER_JSON: /todo-with-clean-architecture.yml
+      SWAGGER_JSON: /todo-with-usecase-architecture.yml

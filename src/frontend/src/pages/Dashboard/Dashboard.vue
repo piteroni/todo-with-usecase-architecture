@@ -6,7 +6,7 @@
       <v-flex fill-height>
         <navbar>
           <strong class="my-auto">
-            Todo with clean architecture
+            Todo with usecase architecture
           </strong>
 
           <v-spacer />
