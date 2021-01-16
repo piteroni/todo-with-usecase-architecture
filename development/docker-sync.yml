@@ -1,0 +1,11 @@
+version: '2'
+
+syncs:
+  # ui source code
+  e74c3cfb00edfffee51a28e8:
+    src: '../src/frontend'
+  # api source code
+  0fb52250724c13df142cb2a7:
+    src: '../src/backend'
+    sync_userid: '33'
+    sync_groupid: '33'

@@ -1,0 +1,4 @@
+.docker
+.docker-sync
+.union*
+node_modules

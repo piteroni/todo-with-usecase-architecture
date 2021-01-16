@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  api:
+    volumes: 
+      - 0fb52250724c13df142cb2a7:/app:nocopy
+  ui:
+    volumes:
+      - e74c3cfb00edfffee51a28e8:/app:nocopy
+volumes:
+  # api source code
+  0fb52250724c13df142cb2a7:
+    external: true
+  # ui source code
+  e74c3cfb00edfffee51a28e8:
+    external: true
