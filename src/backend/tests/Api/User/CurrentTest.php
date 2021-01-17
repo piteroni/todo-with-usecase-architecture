@@ -5,6 +5,8 @@ use App\Models\Task;
 use App\Enums\HttpStatusCode;
 
 describe('/users/current/tasks', function () {
+    $path = '/users/current/tasks';
+
     beforeEach(function () {
         $user = User::factory()->create();
 
@@ -13,36 +15,38 @@ describe('/users/current/tasks', function () {
         ];
     });
 
-    describe(HttpStatusCode::CREATED, function () {
-        it('タスクを送信すると、サーバー上にタスクを保存できる', function () {
-            $response = $this->application
-                ->withHeaders($this->credential)
-                ->postJson('/users/current/tasks', [
-                    'taskName' => 'Test',
-                ]);
+    describe('201', function () use ($path) {
+        it('タスクを送信すると、サーバー上にタスクを保存できる', function () use ($path) {
+            $statusCode = HttpStatusCode::CREATED;
+            $method = 'POST';
+            $requestBody = [
+                'taskName' => 'Test',
+            ];
 
-            $payload = $response->json();
+            $response = $this->application->withHeaders($this->credential)->json($method, $path, $requestBody);
+            $responseBody = $response->json();
 
             /** @var \App\Models\Task */
-            $task = Task::where(['id' => $payload['taskId']])->firstOrFail();
+            $task = Task::where(['id' => $responseBody['taskId']])->firstOrFail();
 
-            expect($response->getStatusCode())->toBe(HttpStatusCode::CREATED);
+            expect($response->getStatusCode())->toBe($statusCode);
             expect($task->name())->toBe('Test');
         });
     });
 
-    describe(HttpStatusCode::UNAUTHORIZED, function () {
-        it('トークンを付与せず、リクエストを送信するとエラーレスポンスが返る', function () {
-            $response = $this->application
-                ->postJson('/users/current/tasks', [
-                    'taskName' => 'Test',
-                ]);
+    describe('401', function () use ($path) {
+        it('トークンを付与せず、リクエストを送信するとエラーレスポンスが返る', function () use ($path) {
+            $method = 'POST';
+            $requestBody = [
+                'taskName' => 'Test',
+            ];
+            $response = $this->application->json($method, $path, $requestBody);
 
             expect($response->getStatusCode())->toBe(HttpStatusCode::UNAUTHORIZED);
         });
     });
 
-    describe(HttpStatusCode::UNPROCESSABLE_ENTITY, function () {
+    describe('422', function () {
         it('リクエストボディを指定しない場合、エラーレスポンスが返る', function () {
             $response = $this->application
                 ->withHeaders($this->credential)

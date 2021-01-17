@@ -1,7 +1,6 @@
 <?php
 
 use Tests\Application;
-use Tests\ApiTestContext;
 use Kahlan\Filter\Filters;
 
 Filters::apply($this, 'run', function ($next) {
@@ -10,7 +9,6 @@ Filters::apply($this, 'run', function ($next) {
     /** @var \Kahlan\Scope $scope */
     $scope = $root->scope();
     $scope->application = new Application();
-    $scope->apiTestContext = new ApiTestContext();
 
     $root->beforeAll(function() use ($scope) {
         $scope->application->setUp();
@@ -23,12 +21,6 @@ Filters::apply($this, 'run', function ($next) {
     $root->afterEach(function() use ($scope) {
         $scope->application->tearDown();
         $scope->application->refreshApplication();
-    });
-
-    $root->afterAll(function () {
-        if (count($this->apiTestContext->contexts()) !== 0) {
-            $this->apiTestContext->dump();
-        }
     });
 
     return $next();
