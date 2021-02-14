@@ -13,7 +13,7 @@ class Task extends Model
 
     /**
      * タスクのIDを取得する.
-     * 
+     *
      * @return int
      *   タスクのID.
      */
@@ -24,7 +24,7 @@ class Task extends Model
 
     /**
      * 作成者のユーザーIDを取得する.
-     * 
+     *
      * @return int
      *   作成者のユーザーID.
      */
@@ -35,7 +35,7 @@ class Task extends Model
 
     /**
      * タスク名を取得する.
-     * 
+     *
      * @return string
      *   タスク名.
      */

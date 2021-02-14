@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Domain\UseCases\User;
+namespace App\UseCases\User\TaskCreate;
 
 use App\Models\Task;
 
 /**
  * タスクの作成機能を提供する.
  */
-class TaskCreateUseCase
+final class TaskCreateUseCase
 {
     /**
      * タスクの作成を行う.
-     * 
+     *
      * @param int $authorId
      *   作成者のID.
      * @param string $taskName

@@ -13,31 +13,6 @@ use Illuminate\Contracts\Validation\Validator;
  */
 class ApiRequest extends FormRequest
 {
-    use TypeCastable;
-
-    /**
-     * 検証済みのリクエストデータの値を調整し取得する.
-     * 
-     * @return object
-     *   検証、調整されたリクエストデータ.
-     * @throws \App\Http\Requests\InvalidCastException
-     *   キャストに失敗した場合に送出される.
-     */
-    public function data(): object
-    {
-        $casts = $this->casts();
-
-        $data = collect($this->validated())->map(function ($value, $key) use ($casts) {
-            if (!array_key_exists($key, $casts)) {
-                return $value;
-            }
-
-            return $this->cast($casts[$key], $value);
-        });
-
-        return (object) $data->toArray();
-    }
-
     /**
      * 失敗したバリデーションのハンドリングを行う.
      *

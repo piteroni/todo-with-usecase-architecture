@@ -4,7 +4,7 @@ namespace App\Http\Requests\User;
 
 use App\Http\Requests\ApiRequest;
 
-class CreateTaskRequest extends ApiRequest
+class TaskCreateRequest extends ApiRequest
 {
     public function rules(): array
     {

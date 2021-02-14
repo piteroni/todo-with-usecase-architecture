@@ -39,7 +39,7 @@
 
                   <v-row>
                     <label for="password" class="col-md-4 text-md-right label">
-                      メールアドレス
+                      パスワード
                     </label>
 
                     <div class="col-md-6 pb-0">
