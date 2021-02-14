@@ -26,6 +26,8 @@ Route::group(['prefix' => 'v0'], function () {
     Route::group(['prefix' => 'users/current'], function () {
         Route::get('credentials/verify', 'App\Http\Controllers\Api\CredentialController@verify')->name('put-users-current-credentials-verify');
 
+        Route::get('tasks', 'App\Http\Controllers\Api\UserController@getTasks')->name('get-users-current-tasks');
         Route::post('tasks', 'App\Http\Controllers\Api\UserController@createTask')->name('post-users-current-tasks');
+        Route::delete('tasks/{taskId}', 'App\Http\Controllers\Api\UserController@deleteTask')->name('delete-users-current-tasks-taskId');
     });
 });

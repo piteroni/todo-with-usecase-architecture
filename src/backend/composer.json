@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.5"
     },
     "require-dev": {
+        "codeception/specify": "^1.4",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
         "kahlan/kahlan": "^4.7",

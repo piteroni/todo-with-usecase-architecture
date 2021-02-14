@@ -14,8 +14,12 @@
         </navbar>
 
         <v-container fluid class="mx-12">
-          <v-form ref="form" lazy-validation>
+          <v-form ref="form" lazy-validation class="mb-6">
             <v-col cols="4" class="pa-0">
+              <v-subheader class="pb-2 px-0 subtitle-1">
+                タスク登録
+              </v-subheader>
+
               <v-layout>
                 <v-text-field
                   v-model="taskName"
@@ -31,6 +35,28 @@
               </v-layout>
             </v-col>
           </v-form>
+
+          <div>
+            <v-subheader class="pb-2 px-0 subtitle-1">
+              タスク一覧
+            </v-subheader>
+
+            <ul>
+              <li v-for="(task, index) in tasks" :key="index">
+                <v-layout>
+                  <v-col cols="4" class="pa-0">
+                    <div>{{ task.name }}</div>
+                  </v-col>
+
+                  <div class="my-auto">
+                    <v-btn icon @click="() => handleClickOnTaskDeleteButton(task.id)">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </div>
+                </v-layout>
+              </li>
+            </ul>
+          </div>
         </v-container>
       </v-flex>
     </v-layout>
@@ -44,6 +70,7 @@ import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
 import { ClientError, ServerError } from "@/api/exceptions";
 import { RedirectIfUnauthenticated } from "@/mixins/RedirectIfUnauthenticated";
+import { GetTasksResponse } from "@/api/User/types";
 import { VForm } from "@/shared/vuetify";
 import Navbar from "@/components/singletons/Navber.vue";
 import MoreMenu from "@/components/singletons/MoreMenu.vue";
@@ -74,6 +101,11 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
   public taskName = "";
 
   /**
+   * タスクのリストを保持する.
+   */
+  public tasks: GetTasksResponse = [];
+
+  /**
    * タスクのバリデーションルールを取得する.
    */
   public get taskRules(): Array<Function> {
@@ -82,7 +114,7 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
     ];
   }
 
-  private async mounted() {
+  public async mounted() {
     try {
       await this.redirectIfUnauthenticated();
     } catch (e) {
@@ -91,7 +123,22 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
       this.$notify.error("問題が発生しました");
     }
 
+    await this.fetchTasks();
+
     this.loading = false;
+  }
+
+  /**
+   * タスクのリストをサーバーから取得する.
+   */
+  private async fetchTasks(): Promise<void> {
+    try {
+      this.tasks = await this.$user.getTasks();
+    } catch (e) {
+      console.error(e);
+
+      this.$notify.error("問題が発生しました");
+    }
   }
 
   /**
@@ -125,16 +172,33 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
    * @return
    *   フォーム内の入力値が有効であるか.
    */
-  public isValid(): boolean {
+  private isValid(): boolean {
     return this.form.validate();
   }
 
   /**
    * フォームの値を初期化する.
    */
-  public reset(): void {
+  private reset(): void {
     this.form.reset();
     this.taskName = "";
+  }
+
+  /**
+   * タスク削除ボタンのクリックイベントを処理する.
+   *
+   * @param taskId
+   *   削除対象のタスクのID.
+   */
+  public async handleClickOnTaskDeleteButton(taskId: number): Promise<void> {
+    try {
+      await this.$user.deleteTask(taskId);
+    } catch (e) {
+      console.error(e);
+      this.$notify.error("問題が発生しました");
+    }
+
+    await this.fetchTasks();
   }
 }
 </script>

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Enums;
+namespace App\Http;
 
 /**
  * HTTPレスポンスコードを表す.
- * 
+ *
  * @see https://github.com/symfony/http-foundation/blob/master/Response.php
  */
 final class HttpStatusCode

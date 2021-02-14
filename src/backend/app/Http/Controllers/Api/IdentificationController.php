@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Identification\LoginRequest;
 use App\Http\Resources\Identification\ApiToken;
-use App\Exceptions\Api\BadRequestException;
+use App\Exceptions\Api\UnauthorizedException;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Auth;
 class IdentificationController extends Controller
 {
     /**
-     * ユーザー認証を行う.
-     * 
-     * @param $request
+     * ログイン処理を行う.
+     *
+     * @param \App\Http\Requests\Identification\LoginRequest $request
      *   リクエストオブジェクト.
-     * @return 
+     * @return \Illuminate\Http\JsonResponse
      *   認証済みユーザーのAPI Token.
      * @throws \App\Exceptions\Api\UnauthorizedException
      */
@@ -28,7 +28,7 @@ class IdentificationController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!Auth::attempt($credentials)) {
-            throw new BadRequestException($operationId, 'ログインに失敗しました');
+            throw new UnauthorizedException($operationId, 'ログインに失敗しました');
         }
 
         /** @var \App\Models\User */
@@ -40,7 +40,7 @@ class IdentificationController extends Controller
 
     /**
      * システムからログアウトを行う.
-     * 
+     *
      * @return \Illuminate\Http\Request
      *   リクエストオブジェクト.
      * @return \Illuminate\Http\JsonResponse
@@ -57,5 +57,5 @@ class IdentificationController extends Controller
         $user->tokens()->delete();
 
         return new JsonResponse();
-    } 
+    }
 }

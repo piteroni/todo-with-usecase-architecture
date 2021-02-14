@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Api;
 
-use App\Enums\HttpStatusCode;
+use App\Http\HttpStatusCode;
 
 class NotFoundException extends ApiException
 {

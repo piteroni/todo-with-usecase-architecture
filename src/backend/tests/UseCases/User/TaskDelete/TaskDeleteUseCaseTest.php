@@ -23,9 +23,6 @@ class TaskDeleteUseCaseTest extends TestCase
         $this->assertNull($task);
     }
 
-    /**
-     * タスクのIDを渡すと、データベースからタスクを削除出来る.
-     */
     public function testNoAuthorize(): void
     {
         $otherId = User::factory()->create()->id;

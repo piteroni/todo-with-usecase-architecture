@@ -2,8 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\TypeCastable;
-use App\Http\Requests\RequestValidateionException;
+use App\Exceptions\Serializable;
 use App\Exceptions\Api\UnprocessableEntityException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
@@ -16,9 +15,7 @@ class ApiRequest extends FormRequest
     /**
      * 失敗したバリデーションのハンドリングを行う.
      *
-     * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     * @return void
-     *
+     * @param  \Illuminate\Contracts\Validation\Validator $validator
      * @throws \App\Exceptions\Api\UnprocessableEntityException
      */
     protected function failedValidation(Validator $validator): void
@@ -34,3 +31,5 @@ class ApiRequest extends FormRequest
         throw new UnprocessableEntityException($this->route()->getName(), '', $exception);
     }
 }
+
+class RequestValidateionException extends Serializable {}

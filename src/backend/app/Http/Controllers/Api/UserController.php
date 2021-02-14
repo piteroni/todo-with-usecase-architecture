@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\UseCases\User\TaskCreate\TaskCreateUseCase;
 use App\UseCases\User\TaskDelete\TaskDeleteUseCase;
-use App\Enums\HttpStatusCode;
+use App\UseCases\User\TaskListAcquisition\TaskListAcquisitionUseCase;
+use App\Http\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\TaskCreateRequest;
 use App\Http\Resources\User\CreatedTaskId;
+use App\Http\Resources\User\TaskList;
 use App\Exceptions\Api\InternalServerErrorException;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -51,14 +53,43 @@ class UserController extends Controller
     }
 
     /**
+     * タスクのリストの取得を行う.
+     *
+     * @param \Illuminate\Http\Request $request
+     *   リクエストオブジェクト.
+     * @param \App\UseCases\User\TaskListAcquisition\TaskListAcquisitionUseCase $taskListAcquisitionUseCase
+     *   タスクリスト取得ユースケース.
+     * @return \Illuminate\Http\JsonResponse
+     *   タスクのリスト.
+     * @throws \App\Exceptions\Api\InternalServerErrorException
+     *   サーバーで何らかの問題が発生した場合に送出される.
+     */
+    public function getTasks(Request $request, TaskListAcquisitionUseCase $taskListAcquisitionUseCase): JsonResponse
+    {
+        $operationId = $request->route()->getName();
+
+        $authorId = $request->user()->id;
+
+        $tasks = null;
+
+        try {
+            $tasks = $taskListAcquisitionUseCase->getTasks($authorId);
+        } catch (Throwable $e) {
+            throw new InternalServerErrorException($operationId, '', $e);
+        }
+
+        return new JsonResponse(new TaskList($tasks), HttpStatusCode::OK);
+    }
+
+    /**
      * タスクの削除を行う.
      *
-     * @param \App\Http\Requests\User\CreateTaskRequest $request
+     * @param \Illuminate\Http\Request $request
      *   リクエストオブジェクト.
      * @param int $taskId
      *   削除対象となるタスクのID.
      * @param \App\UseCases\User\TaskDelete\TaskDeleteUseCase $taskDeleteUseCase
-     *   タスク削除cユースケース.
+     *   タスク削除ユースケース.
      * @return \Illuminate\Http\JsonResponse
      *   空のレスポンス.
      * @throws \App\Exceptions\Api\InternalServerErrorException

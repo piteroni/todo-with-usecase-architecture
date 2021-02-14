@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
 
     /**
      * 派生元例外情報を文字列にフォーマットし取得する.
-     * 
+     *
      * @param \App\Exceptions\Api\ApiException $exception
      *   Api 例外オブジェクト.
      * @param \Exception $previous
@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
     {
         $previousName = get_class($previous);
 
-        if ($previous instanceof JsonSerializable) {
+        if ($previous instanceof Serializable) {
             $reasonKeyName = 'context';
             $message = json_decode($previous->getMessage(), JSON_OBJECT_AS_ARRAY);
         } else {
