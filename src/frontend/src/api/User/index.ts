@@ -2,36 +2,12 @@ import { AxiosResponse } from "axios";
 import { injectable } from "inversify";
 import { throwApiError } from "@/api/handlers";
 import { api } from "@/api/base";
-import { ApiError } from "@/api/exceptions";
-import { HttpStatusCode } from "@/shared/http";
-import { UnauthorizedError } from "./UnauthorizedError";
 import { GetTasksResponse } from "./types";
 
 export const resource = "/users";
 
 @injectable()
 export class User {
-  /**
-   * ログインユーザーの資格情報を検証する.
-   *
-   * @throws {ApiError}
-   * @throws {UnauthorizedError}
-   * @deprecated これはCredentialsに変えたいねー
-   */
-  public async verifyCrediantials(): Promise<void> {
-    try {
-      await api.get(`${resource}/current/credentials/verify`).catch(throwApiError);
-    } catch (e) {
-      if (e instanceof ApiError) {
-        if (e.statusCode === HttpStatusCode.UNAUTHORIZED) {
-          throw new UnauthorizedError(e.message, e.statusCode, e.code);
-        }
-      }
-
-      throw e;
-    }
-  }
-
   /**
    * タスクの作成を行う.
    *

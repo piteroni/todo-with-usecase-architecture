@@ -19,7 +19,7 @@ Route::group(['prefix' => 'v0'], function () {
         Route::post('logout', 'App\Http\Controllers\Api\IdentificationController@logout')->name('post-logout');
     });
 
-    Route::group(['prefix' => 'credentials/current'], function () {
+    Route::group(['prefix' => 'credentials'], function () {
         Route::post('verify', 'App\Http\Controllers\Api\CredentialController@verify')->name('post-credentials-current-verify');
     });
 

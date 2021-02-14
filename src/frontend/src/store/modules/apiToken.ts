@@ -5,7 +5,7 @@ import { Api } from "@/providers/containers/api";
 import { types } from "@/providers/types";
 import { Identification } from "@/api/Identification";
 import { apiTokenKey } from "@/shared/localStorageKeys";
-import { User } from "@/api/User";
+import { Credential } from "@/api/Credential";
 
 export type ApiToken = {
   token: string;
@@ -46,8 +46,8 @@ export class ApiTokenActions extends Actions<ApiToken, any, ApiTokenMutations> {
   @Api(types.api.Identification)
   private $identification!: Identification;
 
-  @Api(types.api.User)
-  private $user!: User;
+  @Api(types.api.Credential)
+  private $credential!: Credential;
 
   /**
    * API Tokenの初期化処理を行う.
@@ -81,7 +81,7 @@ export class ApiTokenActions extends Actions<ApiToken, any, ApiTokenMutations> {
    * @throws {APiError}
    */
   public async verifyCrediantials(): Promise<void> {
-    await this.$user.verifyCrediantials();
+    await this.$credential.verify();
   }
 
   /**

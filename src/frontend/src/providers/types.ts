@@ -1,6 +1,7 @@
 export const types = {
   api: {
     Identification: Symbol.for("api.Identification"),
+    Credential: Symbol.for("api.Credential"),
     User: Symbol.for("api.User")
   },
   vuexContexts: {

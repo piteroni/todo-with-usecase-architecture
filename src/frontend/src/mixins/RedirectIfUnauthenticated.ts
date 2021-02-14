@@ -2,8 +2,7 @@ import { Vue, Component } from "vue-property-decorator";
 import { types } from "@/providers/types";
 import { Api } from "@/providers/containers/api";
 import { VuexContext } from "@/providers/containers/vuexContext";
-import { User } from "@/api/User";
-import { UnauthorizedError } from "@/api/User/UnauthorizedError";
+import { Credential, UnauthorizedError } from "@/api/Credential";
 import { ApiTokenContext } from "@/store/modules/apiToken";
 import { routeNames } from "@/router/routeNames";
 
@@ -12,8 +11,8 @@ class Dependence {
   @VuexContext(types.vuexContexts.apiToken)
   public $apiToken!: ApiTokenContext;
 
-  @Api(types.api.User)
-  public $user!: User;
+  @Api(types.api.Credential)
+  public $credential!: Credential;
 }
 
 @Component
@@ -34,7 +33,7 @@ export class RedirectIfUnauthenticated extends Vue {
     }
 
     try {
-      await dependence.$user.verifyCrediantials();
+      await dependence.$credential.verify();
     } catch (e) {
       if (e instanceof UnauthorizedError) {
         this.$router.push({ name: routeNames.login, query: { isRedirect: "true" } });
