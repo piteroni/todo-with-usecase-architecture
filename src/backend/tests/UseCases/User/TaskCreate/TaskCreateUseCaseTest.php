@@ -12,10 +12,11 @@ class TaskCreateUseCaseTest extends TestCase
      */
     public function testCreateTask(): void
     {
+        $taskCreateUseCase = new TaskCreateUseCase();
         $authorId = User::factory()->create()->id;
         $taskName = '34a96501ddc10e38821816f29c2b49b9bfad92fafa';
 
-        $taskId = (new TaskCreateUseCase())->createTask($authorId, $taskName);
+        $taskId = $taskCreateUseCase->createTask($authorId, $taskName);
         $task = Task::find($taskId);
 
         $this->assertNotNull($task);

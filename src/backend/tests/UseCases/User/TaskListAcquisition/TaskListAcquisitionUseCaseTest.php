@@ -12,10 +12,12 @@ class TaskListAcquisitionUseCaseTest extends TestCase
      */
     public function testGetTasks(): void
     {
+        $taskListAcquisitionUseCase = new TaskListAcquisitionUseCase();
+
         $authorId = User::factory()->create()->id;
         $expected = Task::factory(5)->create(['user_id' => $authorId])->toArray();
 
-        $actual = (new TaskListAcquisitionUseCase())->getTasks($authorId);
+        $actual = $taskListAcquisitionUseCase->getTasks($authorId);
 
         $this->assertCount(5, $actual);
         $this->assertEquals($expected, $actual);

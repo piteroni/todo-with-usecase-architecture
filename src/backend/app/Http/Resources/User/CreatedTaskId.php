@@ -16,7 +16,7 @@ class CreatedTaskId extends JsonResource
         $this->taskId = $taskId;
     }
 
-    public function handle(): array
+    public function toArray($request): array
     {
         return [
             'taskId' => $this->taskId

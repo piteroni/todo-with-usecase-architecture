@@ -5,12 +5,12 @@ namespace App\UseCases\User\TaskListAcquisition;
 use App\Models\Task;
 
 /**
- * タスクの配列の取得機能を提供する.
+ * タスクのリストの取得機能を提供する.
  */
 final class TaskListAcquisitionUseCase
 {
     /**
-     * 指定されたユーザーのタスクの配列の取得する.
+     * 指定されたユーザーのタスクのリストの取得する.
      *
      * @param int $userId
      *   タスクを保有するユーザーのID.

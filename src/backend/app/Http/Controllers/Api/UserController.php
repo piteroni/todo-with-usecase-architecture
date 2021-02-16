@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\UseCases\User\TaskCreate\TaskCreateUseCase;
+use App\UseCases\User\TaskDelete\TaskDeleteAuthorize;
 use App\UseCases\User\TaskDelete\TaskDeleteUseCase;
 use App\UseCases\User\TaskListAcquisition\TaskListAcquisitionUseCase;
 use App\Http\HttpStatusCode;
@@ -10,6 +11,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\TaskCreateRequest;
 use App\Http\Resources\User\CreatedTaskId;
 use App\Http\Resources\User\TaskList;
+use App\Exceptions\AuthorizationException;
+use App\Exceptions\Api\ForbiddenException;
 use App\Exceptions\Api\InternalServerErrorException;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -27,19 +30,18 @@ class UserController extends Controller
      *
      * @param \App\Http\Requests\User\TaskCreateRequest $request
      *   リクエストオブジェクト.
-     * @param \App\UseCases\User\TaskCreate\TaskCreateUseCase $taskCreateUseCase
-     *   タスク作成ユースケース.
      * @return \Illuminate\Http\JsonResponse
      *   作成したタスクのID.
      * @throws \App\Exceptions\Api\InternalServerErrorException
      *   サーバーで何らかの問題が発生した場合に送出される.
      */
-    public function createTask(TaskCreateRequest $request, TaskCreateUseCase $taskCreateUseCase): JsonResponse
+    public function createTask(TaskCreateRequest $request): JsonResponse
     {
         $operationId = $request->route()->getName();
+        $taskCreateUseCase = new TaskCreateUseCase();
 
         $authorId = $request->user()->id;
-        $taskName = $request->taskName;
+        $taskName = $request->get('taskName');
 
         $createdTaskId = null;
 
@@ -49,7 +51,7 @@ class UserController extends Controller
             throw new InternalServerErrorException($operationId, '', $e);
         }
 
-        return new JsonResponse((new CreatedTaskId($createdTaskId))->handle(), HttpStatusCode::CREATED);
+        return new JsonResponse(new CreatedTaskId($createdTaskId), HttpStatusCode::CREATED);
     }
 
     /**
@@ -57,26 +59,18 @@ class UserController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      *   リクエストオブジェクト.
-     * @param \App\UseCases\User\TaskListAcquisition\TaskListAcquisitionUseCase $taskListAcquisitionUseCase
-     *   タスクリスト取得ユースケース.
      * @return \Illuminate\Http\JsonResponse
      *   タスクのリスト.
      * @throws \App\Exceptions\Api\InternalServerErrorException
      *   サーバーで何らかの問題が発生した場合に送出される.
      */
-    public function getTasks(Request $request, TaskListAcquisitionUseCase $taskListAcquisitionUseCase): JsonResponse
+    public function getTasks(Request $request): JsonResponse
     {
-        $operationId = $request->route()->getName();
+        $taskListAcquisitionUseCase = new TaskListAcquisitionUseCase();
 
         $authorId = $request->user()->id;
 
-        $tasks = null;
-
-        try {
-            $tasks = $taskListAcquisitionUseCase->getTasks($authorId);
-        } catch (Throwable $e) {
-            throw new InternalServerErrorException($operationId, '', $e);
-        }
+        $tasks = $taskListAcquisitionUseCase->getTasks($authorId);
 
         return new JsonResponse(new TaskList($tasks), HttpStatusCode::OK);
     }
@@ -88,21 +82,29 @@ class UserController extends Controller
      *   リクエストオブジェクト.
      * @param int $taskId
      *   削除対象となるタスクのID.
-     * @param \App\UseCases\User\TaskDelete\TaskDeleteUseCase $taskDeleteUseCase
-     *   タスク削除ユースケース.
      * @return \Illuminate\Http\JsonResponse
      *   空のレスポンス.
+     * @throws \App\Exceptions\Api\ForbiddenException
+     *   タスクの削除権限がない場合に送出される.
      * @throws \App\Exceptions\Api\InternalServerErrorException
      *   サーバーで何らかの問題が発生した場合に送出される.
      */
-    public function deleteTask(Request $request, int $taskId, TaskDeleteUseCase $taskDeleteUseCase): JsonResponse
+    public function deleteTask(Request $request, int $taskId): JsonResponse
     {
         $operationId = $request->route()->getName();
+        $taskDeleteAuthorize = new TaskDeleteAuthorize();
+        $taskDeleteUseCase = new TaskDeleteUseCase();
 
         $authorId = $request->user()->id;
 
         try {
-            $taskDeleteUseCase->deleteTask($authorId, $taskId);
+            $taskDeleteAuthorize->authorize($authorId, $taskId);
+        } catch (AuthorizationException $e) {
+            throw new ForbiddenException($operationId, '', $e);
+        }
+
+        try {
+            $taskDeleteUseCase->deleteTask($taskId);
         } catch (Throwable $e) {
             throw new InternalServerErrorException($operationId, '', $e);
         }
