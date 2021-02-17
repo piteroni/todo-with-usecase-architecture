@@ -70,11 +70,11 @@ import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
 import { ClientError, ServerError } from "@/api/exceptions";
 import { RedirectIfUnauthenticated } from "@/mixins/RedirectIfUnauthenticated";
-import { GetTasksResponse } from "@/api/User/types";
 import { VForm } from "@/shared/vuetify";
 import Navbar from "@/components/singletons/Navber.vue";
 import MoreMenu from "@/components/singletons/MoreMenu.vue";
 import Loading from "@/components/singletons/Loading.vue";
+import { Task } from "./types";
 
 @Component({
   components: {
@@ -103,7 +103,7 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
   /**
    * タスクのリストを保持する.
    */
-  public tasks: GetTasksResponse = [];
+  public tasks: Task[] = [];
 
   /**
    * タスクのバリデーションルールを取得する.
@@ -164,6 +164,8 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
     }
 
     this.reset();
+
+    await this.fetchTasks();
   }
 
   /**

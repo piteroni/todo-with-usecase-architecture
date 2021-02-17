@@ -102,7 +102,7 @@ import { ApiTokenContext } from "@/store/modules/apiToken";
 import { routeNames } from "@/router/routeNames";
 import { ClientError, ServerError } from "@/api/exceptions";
 import { VForm } from "@/shared/vuetify";
-import { UnauthorizedError } from "@/api/User/UnauthorizedError";
+import { UnauthorizedError } from "@/api/Credential";
 import Navbar from "@/components/singletons/Navber.vue";
 import Loading from "@/components/singletons/Loading.vue";
 
