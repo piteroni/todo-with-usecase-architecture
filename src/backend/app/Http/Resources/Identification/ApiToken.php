@@ -22,7 +22,7 @@ class ApiToken extends JsonResource
      *
      * @return array
      */
-    public function handle(): array
+    public function handle($request): array
     {
         return [
             'apiToken' => $this->apiToken

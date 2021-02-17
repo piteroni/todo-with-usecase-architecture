@@ -1,0 +1,10 @@
+parameters:
+  level: 4
+  scanFiles:
+    - _ide_helper.php
+  paths:
+    - app
+    - config
+    - database
+    - routes
+    - tests

@@ -32,11 +32,10 @@ class ApiException extends RuntimeException implements Responsable
     /**
      * @param string $errorCode
      * @param string $message
-     * @param \Exception? $previous
-     * @param array? $context
+     * @param \Exception|null $previous
      * @param int $statusCode
      */
-    public function __construct($errorCode = '', $message = '', Exception $previous = null, $statusCode = 500)
+    public function __construct($errorCode = '', $message = '', ?Exception $previous = null, $statusCode = 500)
     {
         $this->errorCode = $errorCode;
         $this->message = $message;
@@ -45,7 +44,7 @@ class ApiException extends RuntimeException implements Responsable
     }
 
     /**
-     * @param $message
+     * @param string $message
      */
     public function setErrorMessage(string $message): void
     {
@@ -53,7 +52,7 @@ class ApiException extends RuntimeException implements Responsable
     }
 
     /**
-     * @param $statusCode
+     * @param int $statusCode
      */
     public function setStatusCode(int $statusCode): void
     {
@@ -61,7 +60,7 @@ class ApiException extends RuntimeException implements Responsable
     }
 
     /**
-     * @param $errorCode
+     * @param string $errorCode
      */
     public function setErrorCode(string $errorCode): void
     {
@@ -69,7 +68,7 @@ class ApiException extends RuntimeException implements Responsable
     }
 
     /**
-     * @return
+     * @return string
      */
     public function getErrorMessage(): string
     {
@@ -77,7 +76,7 @@ class ApiException extends RuntimeException implements Responsable
     }
 
     /**
-     * @return
+     * @return int
      */
     public function getStatusCode(): int
     {
@@ -85,7 +84,7 @@ class ApiException extends RuntimeException implements Responsable
     }
 
     /**
-     * @return
+     * @return string
      */
     public function getErrorCode(): string
     {
@@ -105,7 +104,7 @@ class ApiException extends RuntimeException implements Responsable
     }
 
     /**
-     * @return
+     * @return array
      */
     protected function getBasicResponse()
     {

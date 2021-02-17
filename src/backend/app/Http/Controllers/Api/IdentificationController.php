@@ -35,7 +35,7 @@ class IdentificationController extends Controller
         $user = Auth::user();
         $apiToken = $user->createToken('apiToken')->plainTextToken;
 
-        return new JsonResponse((new ApiToken($apiToken))->handle());
+        return new JsonResponse(new ApiToken($apiToken));
     }
 
     /**

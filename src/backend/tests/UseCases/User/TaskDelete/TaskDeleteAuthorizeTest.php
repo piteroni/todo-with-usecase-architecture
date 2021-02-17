@@ -18,7 +18,7 @@ class TaskDeleteAuthorizeTest extends TestCase
         $authorId = User::factory()->create()->id;
         $taskId = Task::factory()->create(['user_id' => $authorId])->id;
 
-        $this->expectNotToPerformAssertions(AuthorizationException::class);
+        $this->expectNotToPerformAssertions();
 
         $taskDeleteAuthorize->authorize($authorId, $taskId);
     }
