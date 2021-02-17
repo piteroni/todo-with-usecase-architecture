@@ -39,7 +39,7 @@ class IdentificationController extends Controller
     }
 
     /**
-     * システムからログアウトを行う.
+     * ログアウト処理を行う.
      *
      * @return \Illuminate\Http\Request
      *   リクエストオブジェクト.

@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Exceptions\Serializable;
 use App\Exceptions\Api\UnprocessableEntityException;
+use App\Exceptions\Core\Serializable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 

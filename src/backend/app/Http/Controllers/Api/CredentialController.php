@@ -14,8 +14,8 @@ class CredentialController extends Controller
 
     /**
      * クライエントから送信された資格情報が有効であるか検証する.
-     * 
-     * @return
+     *
+     * @return \Illuminate\Http\JsonResponse
      *   空のレスポンス.
      */
     public function verify(): JsonResponse

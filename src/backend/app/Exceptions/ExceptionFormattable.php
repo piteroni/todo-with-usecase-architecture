@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Exceptions\Api\ApiException;
+use App\Exceptions\Core\Serializable;
 use Exception;
 
 trait ExceptionFormattable
@@ -14,7 +15,9 @@ trait ExceptionFormattable
      *   Api 例外オブジェクト.
      * @param \Exception $previous
      *   派生元例外オブジェクト.
-     * @return
+     * @param array $contexts
+     *   例外の補足情報が格納された配列.
+     * @return string
      *   フォーマットされた例外情報.
      */
     private function formatApiException(ApiException $exception, Exception $previous, array $contexts): string
