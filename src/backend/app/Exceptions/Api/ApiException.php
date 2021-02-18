@@ -5,6 +5,7 @@ namespace App\Exceptions\Api;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Exception;
+use Throwable;
 use RuntimeException;
 
 class ApiException extends RuntimeException implements Responsable
@@ -25,17 +26,17 @@ class ApiException extends RuntimeException implements Responsable
     protected $errorCode;
 
     /**
-     * @var \Exception?
+     * @var \Throwable|null
      */
     protected $previous;
 
     /**
      * @param string $errorCode
      * @param string $message
-     * @param \Exception|null $previous
+     * @param \Throwable|null $previous
      * @param int $statusCode
      */
-    public function __construct($errorCode = '', $message = '', ?Exception $previous = null, $statusCode = 500)
+    public function __construct($errorCode = '', $message = '', ?Throwable $previous = null, $statusCode = 500)
     {
         $this->errorCode = $errorCode;
         $this->message = $message;
@@ -114,7 +115,7 @@ class ApiException extends RuntimeException implements Responsable
         ];
     }
 
-    public function previous(): ?Exception
+    public function previous(): ?Throwable
     {
         return $this->previous;
     }

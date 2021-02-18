@@ -25,6 +25,7 @@
         "kahlan/kahlan": "^4.7",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",
+        "nunomaduro/larastan": "^0.7.0",
         "phpdocumentor/phpdocumentor": "^3.0",
         "phpstan/phpstan": "^0.12.76",
         "phpunit/phpunit": "^9.3.3"
@@ -55,6 +56,12 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
+        "test": [
+            "vendor/bin/phpunit -c phpunit.xml"
+        ],
+        "analyse": [
+            "vendor/bin/phpstan analyse -c phpstan.neon"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

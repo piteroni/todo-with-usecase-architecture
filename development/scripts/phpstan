@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-set -eu
-
-php artisan ide-helper:generate
-
-vendor/bin/phpstan analyse -c phpstan.neon

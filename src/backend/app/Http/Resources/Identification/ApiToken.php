@@ -9,7 +9,7 @@ class ApiToken extends JsonResource
     private string $apiToken;
 
     /**
-     * @param  mixed  $resource
+     * @param  string  $apiToken
      * @return void
      */
     public function __construct(string $apiToken)

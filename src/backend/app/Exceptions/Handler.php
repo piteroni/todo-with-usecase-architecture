@@ -41,6 +41,7 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ApiException && !is_null(($previous = $exception->previous()))) {
+            /** @var \Throwable $previous */
             Log::error($this->formatApiException($exception, $previous, parent::context()));
         }
 

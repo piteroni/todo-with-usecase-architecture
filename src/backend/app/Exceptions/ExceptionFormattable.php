@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Exceptions\Api\ApiException;
 use App\Exceptions\Core\Serializable;
 use Exception;
+use Throwable;
 
 trait ExceptionFormattable
 {
@@ -13,20 +14,20 @@ trait ExceptionFormattable
      *
      * @param \App\Exceptions\Api\ApiException $exception
      *   Api 例外オブジェクト.
-     * @param \Exception $previous
+     * @param \Throwable $previous
      *   派生元例外オブジェクト.
      * @param array $contexts
      *   例外の補足情報が格納された配列.
      * @return string
      *   フォーマットされた例外情報.
      */
-    private function formatApiException(ApiException $exception, Exception $previous, array $contexts): string
+    private function formatApiException(ApiException $exception, Throwable $previous, array $contexts): string
     {
         $previousName = get_class($previous);
 
         if ($previous instanceof Serializable) {
             $reasonKeyName = 'context';
-            $message = json_decode($previous->getMessage(), JSON_OBJECT_AS_ARRAY);
+            $message = json_decode($previous->getMessage(), true);
         } else {
             $reasonKeyName = 'message';
             $message = $previous->getMessage();

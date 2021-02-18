@@ -11,12 +11,19 @@ class ExceptionFormatTest extends TestCase
      */
     public function testFormatException(): void
     {
-        $formetter = new ExceptionFormatter();
+        $format = new class {
+            use ExceptionFormattable;
+
+            public function __invoke(...$args)
+            {
+                return $this->formatApiException(...$args);
+            }
+        };
 
         $apiException = new ApiException('api-exception', 'api-exception-message');
         $previous = new PreviousException('previous-exception');
 
-        $actual = $formetter->formatApiException($apiException, $previous, ['context' => 'mock']);
+        $actual = $format($apiException, $previous, ['context' => 'mock']);
 
         $expected = <<<EOS
         PreviousException at .*\/ExceptionFormatTest.php\(\d*\)
@@ -34,13 +41,3 @@ class ExceptionFormatTest extends TestCase
 }
 
 class PreviousException extends Exception {}
-
-class ExceptionFormatter
-{
-    use ExceptionFormattable;
-
-    public function __call($method, $params)
-    {
-        return method_exists($this, $method) ? call_user_func_array([$this, $method], $params) : call_user_func_array([$this->app, $method], $params);
-    }
-}
