@@ -14,6 +14,8 @@ final class TaskDeleteUseCase
      *
      * @param int $taskId
      *   タスクのID.
+     * @throws \Exception
+     *   SQLの実行に失敗した場合に送出される.
      */
     public function deleteTask(int $taskId): void
     {

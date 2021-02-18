@@ -137,12 +137,12 @@ export default class Login extends Vue {
   /**
    * 認証エラーが発生したか否かを表す.
    */
-  private isError = false;
+  public isError = false;
 
   /**
    * エラーメッセージを保持する.
    */
-  private errorMessage = "";
+  public errorMessage = "";
 
   /**
    * メールアドレス欄のバリデーションルールを取得する.

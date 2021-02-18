@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Identification\LoginRequest;
 use App\Http\Resources\Identification\ApiToken;
 use App\Exceptions\Api\UnauthorizedException;
+use App\Http\HttpStatusCode;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +36,7 @@ class IdentificationController extends Controller
         $user = Auth::user();
         $apiToken = $user->createToken('apiToken')->plainTextToken;
 
-        return new JsonResponse(new ApiToken($apiToken));
+        return response()->json(new ApiToken($apiToken), HttpStatusCode::OK);
     }
 
     /**
@@ -51,11 +52,11 @@ class IdentificationController extends Controller
         $user = $request->user();
 
         if (is_null($user)) {
-            return new JsonResponse();
+            return response()->json();
         }
 
         $user->tokens()->delete();
 
-        return new JsonResponse();
+        return response()->json();
     }
 }

@@ -32,12 +32,9 @@ class UserController extends Controller
      *   リクエストオブジェクト.
      * @return \Illuminate\Http\JsonResponse
      *   作成したタスクのID.
-     * @throws \App\Exceptions\Api\InternalServerErrorException
-     *   サーバーで何らかの問題が発生した場合に送出される.
      */
     public function createTask(TaskCreateRequest $request): JsonResponse
     {
-        $operationId = $request->route()->getName();
         $taskCreateUseCase = new TaskCreateUseCase();
 
         $authorId = $request->user()->id;
@@ -45,13 +42,9 @@ class UserController extends Controller
 
         $createdTaskId = null;
 
-        try {
-            $createdTaskId = $taskCreateUseCase->createTask($authorId, $taskName);
-        } catch (Throwable $e) {
-            throw new InternalServerErrorException($operationId, '', $e);
-        }
+        $createdTaskId = $taskCreateUseCase->createTask($authorId, $taskName);
 
-        return new JsonResponse(new CreatedTaskId($createdTaskId), HttpStatusCode::CREATED);
+        return response()->json(new CreatedTaskId($createdTaskId), HttpStatusCode::CREATED);
     }
 
     /**
@@ -61,8 +54,6 @@ class UserController extends Controller
      *   リクエストオブジェクト.
      * @return \Illuminate\Http\JsonResponse
      *   タスクのリスト.
-     * @throws \App\Exceptions\Api\InternalServerErrorException
-     *   サーバーで何らかの問題が発生した場合に送出される.
      */
     public function getTasks(Request $request): JsonResponse
     {
@@ -72,7 +63,7 @@ class UserController extends Controller
 
         $tasks = $taskListAcquisitionUseCase->getTasks($authorId);
 
-        return new JsonResponse(new TaskList($tasks), HttpStatusCode::OK);
+        return response()->json(new TaskList($tasks), HttpStatusCode::OK);
     }
 
     /**
@@ -109,6 +100,6 @@ class UserController extends Controller
             throw new InternalServerErrorException($operationId, '', $e);
         }
 
-        return new JsonResponse(null, HttpStatusCode::NO_CONTENT);
+        return response()->json(null, HttpStatusCode::NO_CONTENT);
     }
 }

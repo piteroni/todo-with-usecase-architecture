@@ -4,7 +4,6 @@ namespace App\Exceptions\Api;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
-use Exception;
 use Throwable;
 use RuntimeException;
 
@@ -98,7 +97,7 @@ class ApiException extends RuntimeException implements Responsable
      */
     public function toResponse($request)
     {
-        return new JsonResponse(
+        return response()->json(
             $this->getBasicResponse(),
             $this->getStatusCode()
         );

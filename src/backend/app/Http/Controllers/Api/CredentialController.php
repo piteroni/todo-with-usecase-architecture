@@ -20,6 +20,6 @@ class CredentialController extends Controller
      */
     public function verify(): JsonResponse
     {
-        return new JsonResponse();
+        return response()->json();
     }
 }
