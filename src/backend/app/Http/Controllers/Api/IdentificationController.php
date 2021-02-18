@@ -51,11 +51,9 @@ class IdentificationController extends Controller
     {
         $user = $request->user();
 
-        if (is_null($user)) {
-            return response()->json();
+        if ($user !== null) {
+            $user->tokens()->delete();
         }
-
-        $user->tokens()->delete();
 
         return response()->json();
     }
