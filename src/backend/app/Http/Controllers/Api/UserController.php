@@ -32,17 +32,25 @@ class UserController extends Controller
      *   リクエストオブジェクト.
      * @return \Illuminate\Http\JsonResponse
      *   作成したタスクのID.
+     * @throws \App\Exceptions\Api\InternalServerErrorException
+     *   サーバーで何らかの問題が発生した場合に送出される.
      */
     public function createTask(TaskCreateRequest $request): JsonResponse
     {
         $taskCreateUseCase = new TaskCreateUseCase();
+
+        $operationId = $request->route()->getName();
 
         $authorId = $request->user()->id;
         $taskName = $request->get('taskName');
 
         $createdTaskId = null;
 
-        $createdTaskId = $taskCreateUseCase->createTask($authorId, $taskName);
+        try {
+            $createdTaskId = $taskCreateUseCase->createTask($authorId, $taskName);
+        } catch (Throwable $e)  {
+            throw new InternalServerErrorException($operationId, '', $e);
+        }
 
         return response()->json(new CreatedTaskId($createdTaskId), HttpStatusCode::CREATED);
     }
@@ -54,14 +62,24 @@ class UserController extends Controller
      *   リクエストオブジェクト.
      * @return \Illuminate\Http\JsonResponse
      *   タスクのリスト.
+     * @throws \App\Exceptions\Api\InternalServerErrorException
+     *   SQLの実行時に失敗した場合に送出される.
      */
     public function getTasks(Request $request): JsonResponse
     {
         $taskListAcquisitionUseCase = new TaskListAcquisitionUseCase();
 
+        $operationId = $request->route()->getName();
+
         $authorId = $request->user()->id;
 
-        $tasks = $taskListAcquisitionUseCase->getTasks($authorId);
+        $tasks = null;
+
+        try {
+            $tasks = $taskListAcquisitionUseCase->getTasks($authorId);
+        } catch (Throwable $e) {
+            throw new InternalServerErrorException($operationId, '', $e);
+        }
 
         return response()->json(new TaskList($tasks), HttpStatusCode::OK);
     }
@@ -82,9 +100,10 @@ class UserController extends Controller
      */
     public function deleteTask(Request $request, int $taskId): JsonResponse
     {
-        $operationId = $request->route()->getName();
-        $taskDeleteAuthorize = new TaskDeleteAuthorize();
         $taskDeleteUseCase = new TaskDeleteUseCase();
+        $taskDeleteAuthorize = new TaskDeleteAuthorize();
+
+        $operationId = $request->route()->getName();
 
         $authorId = $request->user()->id;
 

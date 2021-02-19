@@ -17,8 +17,10 @@ export class Identification {
    *   ユーザーのパスワード.
    * @return
    *   API Token.
+   * @throws {UnauthorizedError}
+   *   認証に失敗した場合に送出される.
    * @throws {APIError}
-   *   APIとの通信に失敗した場合に発生する.
+   *   APIとの通信に失敗した場合に送出される.
    */
   public async login(email: string, password: string): Promise<PostLoginResponse> {
     const data = { email, password };

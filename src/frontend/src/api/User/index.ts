@@ -13,6 +13,8 @@ export class User {
    *
    * @param taskName
    *   タスク名.
+   * @throws {APIError}
+   *   APIとの通信に失敗した場合に発生する.
    */
   public async createTask(taskName: string): Promise<void> {
     const data = { taskName };
@@ -25,6 +27,8 @@ export class User {
    *
    * @return
    *   タスクのリスト.
+   * @throws {APIError}
+   *   APIとの通信に失敗した場合に発生する.
    */
   public async getTasks(): Promise<GetTasksResponse> {
     const response = await api.get(`${resource}/current/tasks`).catch(throwApiError);
@@ -37,6 +41,8 @@ export class User {
    *
    * @param taskId
    *   削除対象のタスクのID.
+   * @throws {APIError}
+   *   APIとの通信に失敗した場合に発生する.
    */
   public async deleteTask(taskId: number): Promise<void> {
     await api.delete(`${resource}/current/tasks/${taskId}`).catch(throwApiError);

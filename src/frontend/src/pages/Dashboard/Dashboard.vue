@@ -28,7 +28,7 @@
                 ></v-text-field>
 
                 <div class="my-auto">
-                  <v-btn icon @click="handleClickOnCreateButton">
+                  <v-btn icon @click="createTask">
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </div>
@@ -49,7 +49,7 @@
                   </v-col>
 
                   <div class="my-auto">
-                    <v-btn icon @click="() => handleClickOnTaskDeleteButton(task.id)">
+                    <v-btn icon @click="() => deleteTask(task.id)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -68,7 +68,6 @@ import { Component, Ref, Mixins } from "vue-property-decorator";
 import { types } from "@/providers/types";
 import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
-import { ClientError, ServerError } from "@/api/exceptions";
 import { RedirectIfUnauthenticated } from "@/mixins/RedirectIfUnauthenticated";
 import { VForm } from "@/shared/vuetify";
 import Navbar from "@/components/singletons/Navber.vue";
@@ -114,51 +113,74 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
     ];
   }
 
-  public async mounted() {
-    try {
-      await this.redirectIfUnauthenticated();
-    } catch (e) {
-      console.error(e);
+  /**
+   * フォーム内の入力値が有効であるか取得する.
+   *
+   * @return
+   *   フォーム内の入力値が有効であるか.
+   */
+  private get isValid(): boolean {
+    return this.form.validate();
+  }
 
+  public async mounted() {
+    let isRedirect = false;
+
+    try {
+      isRedirect = await this.redirectIfUnauthenticated();
+    } catch (e) {
       this.$notify.error("問題が発生しました");
+      console.error(e);
+      return;
     }
 
-    await this.fetchTasks();
+    if (isRedirect) {
+      return;
+    }
+
+    const isSuccess = await this.fetchTasks();
+
+    if (!isSuccess) {
+      return;
+    }
 
     this.loading = false;
   }
 
   /**
    * タスクのリストをサーバーから取得する.
+   *
+   * @returns
+   *   処理に成功したか否か.
    */
-  private async fetchTasks(): Promise<void> {
+  private async fetchTasks(): Promise<boolean> {
+    let isSuccess = true;
+
     try {
       this.tasks = await this.$user.getTasks();
     } catch (e) {
+      isSuccess = false;
       console.error(e);
 
       this.$notify.error("問題が発生しました");
     }
+
+    return isSuccess;
   }
 
   /**
    * タスク作成ボタンのクリックイベントを処理する.
    */
-  public async handleClickOnCreateButton(): Promise<void> {
-    if (!this.isValid()) {
+  public async createTask(): Promise<void> {
+    if (!this.isValid) {
       return;
     }
 
     try {
       await this.$user.createTask(this.taskName);
     } catch (e) {
-      if (e instanceof ClientError) {
-        this.$notify.error(e.message);
-      } else if (e instanceof ServerError) {
-        this.$notify.error("サーバーで問題が発生しました");
-      } else {
-        this.$notify.error("問題が発生しました");
-      }
+      this.$notify.error("問題が発生しました");
+      console.error(e);
 
       return;
     }
@@ -166,16 +188,6 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
     this.reset();
 
     await this.fetchTasks();
-  }
-
-  /**
-   * フォーム内の入力値が有効であるか取得する.
-   *
-   * @return
-   *   フォーム内の入力値が有効であるか.
-   */
-  private isValid(): boolean {
-    return this.form.validate();
   }
 
   /**
@@ -192,12 +204,12 @@ export default class Dashboard extends Mixins(RedirectIfUnauthenticated) {
    * @param taskId
    *   削除対象のタスクのID.
    */
-  public async handleClickOnTaskDeleteButton(taskId: number): Promise<void> {
+  public async deleteTask(taskId: number): Promise<void> {
     try {
       await this.$user.deleteTask(taskId);
     } catch (e) {
-      console.error(e);
       this.$notify.error("問題が発生しました");
+      console.error(e);
     }
 
     await this.fetchTasks();

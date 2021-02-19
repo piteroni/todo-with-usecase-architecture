@@ -18,6 +18,8 @@ final class TaskCreateUseCase
      *   タスク名.
      * @return int
      *   作成したタスクのID.
+     * @throws \Exception
+     *   SQLの実行時に失敗した場合に送出される.
      */
     public function createTask(int $authorId, string $taskName): int
     {

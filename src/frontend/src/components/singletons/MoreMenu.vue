@@ -13,7 +13,7 @@
 
     <v-card>
       <v-list class="py-0">
-        <v-list-item @click="handleClickOnLogoutButton" :ripple="false" class="list-item">
+        <v-list-item @click="logout" :ripple="false" class="list-item">
           <v-list-item-content>
             <v-list-item-subtitle>
               ログアウト
@@ -47,7 +47,7 @@ export default class MoreMenu extends Vue {
   /**
    * ログアウトボタンのクリックイベントを処理する.
    */
-  public async handleClickOnLogoutButton(): Promise<void> {
+  public async logout(): Promise<void> {
     try {
       await this.$apiToken.actions.deactivateApiToken();
     } catch (e) {

@@ -63,6 +63,8 @@ export class ApiTokenActions extends Actions<ApiToken, any, ApiTokenMutations> {
    *
    * @param payload
    *   APIに送信する認証パラメーター.
+   * @throws {UnauthorizedError}
+   *   認証に失敗した場合に送出される.
    * @throws {ApiError}
    *   APIとの通信に失敗した場合に発生する.
    */

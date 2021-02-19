@@ -1,13 +1,8 @@
 includes:
   - vendor/nunomaduro/larastan/extension.neon
-  - vendor/pepakriz/phpstan-exception-rules/extension.neon
 
 parameters:
   level: 5
   paths:
     - app
     - database
-  ignoreErrors:
-    -
-      message: '#PHPDoc tag @throws with type App\\Exceptions\\Api\\UnprocessableEntityException.*#'
-      path: app/Http/Requests/ApiRequest.php

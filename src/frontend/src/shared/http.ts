@@ -396,6 +396,13 @@ export class StatusCode {
   }
 
   /**
+   * 未認証であることを表す.
+   */
+  get isUnauthroized(): boolean {
+    return this.statusCode === HttpStatusCode.UNAUTHORIZED;
+  }
+
+  /**
    * 不正なリクエストであることを表す.
    */
   get isBadRequest(): boolean {

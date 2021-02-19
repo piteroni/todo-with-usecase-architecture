@@ -26,7 +26,7 @@ export default class Loading extends Vue {
    * ローディングフラグ.
    */
   @Prop({ default: false })
-  private loading!: boolean;
+  public loading!: boolean;
 }
 </script>
 

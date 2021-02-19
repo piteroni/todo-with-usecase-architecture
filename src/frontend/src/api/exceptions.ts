@@ -26,6 +26,13 @@ export class ApiError extends RuntimeError {
 }
 
 /**
+ * 未認証の場合のエラー.
+ */
+export class UnauthorizedError extends ApiError {
+  public name = "UnauthorizedError";
+}
+
+/**
  * クライエントエラーの場合のエラー.
  */
 export class ClientError extends ApiError {

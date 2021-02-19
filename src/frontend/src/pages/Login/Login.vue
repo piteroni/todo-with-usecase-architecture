@@ -76,7 +76,7 @@
 
                       <v-btn
                         id="submitButton"
-                        @click="handleClickOnLoginButton"
+                        @click="login"
                         depressed
                         color="primary"
                       >
@@ -100,9 +100,8 @@ import { types } from "@/providers/types";
 import { VuexContext } from "@/providers/containers/vuexContext";
 import { ApiTokenContext } from "@/store/modules/apiToken";
 import { routeNames } from "@/router/routeNames";
-import { ClientError, ServerError } from "@/api/exceptions";
 import { VForm } from "@/shared/vuetify";
-import { UnauthorizedError } from "@/api/Credential";
+import { UnauthorizedError } from "@/api/exceptions";
 import Navbar from "@/components/singletons/Navber.vue";
 import Loading from "@/components/singletons/Loading.vue";
 
@@ -127,12 +126,12 @@ export default class Login extends Vue {
   /**
    * 入力されたメールアドレスを保持する.
    */
-  private email = "";
+  public email = "";
 
   /**
    * 入力されたパスワードを保持する.
    */
-  private password = "";
+  public password = "";
 
   /**
    * 認証エラーが発生したか否かを表す.
@@ -207,7 +206,7 @@ export default class Login extends Vue {
   /**
    * ログインボタンのクリックイベントを処理する.
    */
-  public async handleClickOnLoginButton(): Promise<void> {
+  public async login(): Promise<void> {
     this.clearQuerys();
 
     if (!this.isValid()) {
@@ -216,35 +215,23 @@ export default class Login extends Vue {
 
     this.clear();
 
-    let success = true;
-
     try {
-      await this.login();
+      await this.$apiToken.actions.fetchApiToken({
+        email: this.email,
+        password: this.password
+      });
     } catch (e) {
-      success = false;
-
-      if (e instanceof ClientError) {
+      if (e instanceof UnauthorizedError) {
         this.feedbackError("ログインに失敗しました、入力内容をご確認下さい");
-      } else if (e instanceof ServerError) {
-        this.$notify.error("サーバーで問題が発生しました");
       } else {
         this.$notify.error("問題が発生しました");
+        console.error(e);
       }
+
+      return;
     }
 
-    if (success) {
-      this.$router.push({ name: routeNames.dashboard });
-    }
-  }
-
-  /**
-   * ログイン処理を実施する.
-   */
-  public async login() {
-    await this.$apiToken.actions.fetchApiToken({
-      email: this.email,
-      password: this.password
-    });
+    this.$router.push({ name: routeNames.dashboard });
   }
 
   /**

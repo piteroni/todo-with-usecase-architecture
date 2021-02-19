@@ -1,46 +1,44 @@
 import { Vue, Component } from "vue-property-decorator";
 import { types } from "@/providers/types";
-import { Api } from "@/providers/containers/api";
-import { VuexContext } from "@/providers/containers/vuexContext";
-import { Credential, UnauthorizedError } from "@/api/Credential";
+import { container as apiContainer } from "@/providers/containers/api";
+import { container as vuexContextContainer } from "@/providers/containers/vuexContext";
+import { Credential } from "@/api/Credential";
+import { UnauthorizedError } from "@/api/exceptions";
 import { ApiTokenContext } from "@/store/modules/apiToken";
 import { routeNames } from "@/router/routeNames";
-
-// Mixinが依存するオブジェクトを定義する.
-class Dependence {
-  @VuexContext(types.vuexContexts.apiToken)
-  public $apiToken!: ApiTokenContext;
-
-  @Api(types.api.Credential)
-  public $credential!: Credential;
-}
 
 @Component
 export class RedirectIfUnauthenticated extends Vue {
   /**
-   * ユーザーが認証済みでない場合に、リダイレクトを行う.
+   * ユーザーが認証済みでない場合にリダイレクトを行う.
    *
+   * @return
+   *   リダイレクトを実施したか否か.
    * @throws {ApiError}
    *   401以外のAPIエラーが発生した場合に送出される.
    */
-  public async redirectIfUnauthenticated() {
-    const dependence = new Dependence();
+  protected async redirectIfUnauthenticated(): Promise<boolean> {
+    const apiToken = vuexContextContainer.get<ApiTokenContext>(types.vuexContexts.apiToken);
+    const credential = apiContainer.get<Credential>(types.api.Credential);
 
-    await dependence.$apiToken.actions.setUpToken();
+    await apiToken.actions.setUpToken();
 
-    if (!dependence.$apiToken.getters.isApiTokenStored) {
+    if (!apiToken.getters.isApiTokenStored) {
       this.$router.push({ name: routeNames.login });
+      return true;
     }
 
     try {
-      await dependence.$credential.verify();
+      await credential.verify();
     } catch (e) {
       if (e instanceof UnauthorizedError) {
         this.$router.push({ name: routeNames.login, query: { isRedirect: "true" } });
-        return;
+        return true;
       }
 
       throw e;
     }
+
+    return false;
   }
 }

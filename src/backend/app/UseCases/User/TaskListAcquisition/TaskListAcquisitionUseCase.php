@@ -16,6 +16,8 @@ final class TaskListAcquisitionUseCase
      *   タスクを保有するユーザーのID.
      * @return array
      *   タスクの配列.
+     * @throws \Exception
+     *   SQLの実行時に失敗した場合に送出される.
      */
     public function getTasks(int $userId): array
     {

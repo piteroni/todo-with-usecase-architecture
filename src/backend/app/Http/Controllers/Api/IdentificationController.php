@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Identification\LoginRequest;
 use App\Http\Resources\Identification\ApiToken;
 use App\Exceptions\Api\UnauthorizedException;
-use App\Http\HttpStatusCode;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
