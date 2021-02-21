@@ -5,9 +5,7 @@
     <v-layout v-else justify-center align-center>
       <v-flex fill-height>
         <navbar>
-          <strong class="my-auto">
-            Todo with usecase architecture
-          </strong>
+          <logo></logo>
 
           <v-spacer />
           <more-menu />
@@ -70,6 +68,7 @@ import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
 import { RedirectIfUnauthenticated } from "@/mixins/RedirectIfUnauthenticated";
 import { VForm } from "@/shared/vuetify";
+import Logo from "@/components/singletons/Logo.vue";
 import Navbar from "@/components/singletons/Navber.vue";
 import MoreMenu from "@/components/singletons/MoreMenu.vue";
 import Loading from "@/components/singletons/Loading.vue";
@@ -77,6 +76,7 @@ import { Task } from "./types";
 
 @Component({
   components: {
+    "logo": Logo,
     "loading": Loading,
     "navbar": Navbar,
     "more-menu": MoreMenu,

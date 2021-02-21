@@ -51,8 +51,9 @@ export default class MoreMenu extends Vue {
     try {
       await this.$apiToken.actions.deactivateApiToken();
     } catch (e) {
-      console.error(e);
       this.$notify.error("問題が発生しました");
+      console.error(e);
+      return;
     }
 
     this.$router.push({ name: routeNames.login });

@@ -5,9 +5,7 @@
     <v-layout v-else justify-center align-center>
       <v-flex fill-height>
         <navbar>
-          <strong class="my-auto">
-            Todo with usecase architecture
-          </strong>
+          <logo></logo>
         </navbar>
 
         <div class="container">
@@ -26,7 +24,7 @@
 
                     <div class="col-md-6 pb-0">
                       <v-text-field
-                        id="email"
+                        class="email"
                         type="email"
                         name="email"
                         v-model="email"
@@ -44,8 +42,8 @@
 
                     <div class="col-md-6 pb-0">
                       <v-text-field
-                        id="password"
                         v-model="password"
+                        class="password"
                         type="password"
                         name="password"
                         :rules="passwordRules"
@@ -76,6 +74,7 @@
 
                       <v-btn
                         id="submitButton"
+                        class="loginButton"
                         @click="login"
                         depressed
                         color="primary"
@@ -103,10 +102,12 @@ import { routeNames } from "@/router/routeNames";
 import { VForm } from "@/shared/vuetify";
 import { UnauthorizedError } from "@/api/exceptions";
 import Navbar from "@/components/singletons/Navber.vue";
+import Logo from "@/components/singletons/Logo.vue";
 import Loading from "@/components/singletons/Loading.vue";
 
 @Component({
   components: {
+    "logo": Logo,
     "navbar": Navbar,
     "loading": Loading
   }
@@ -169,11 +170,17 @@ export default class Login extends Vue {
   }
 
   async mounted() {
+    let isSuccess = false;
+
     try {
-      await this.redirectIfAuthenticated();
+      isSuccess = await this.redirectIfAuthenticated();
     } catch (e) {
       console.error(e);
       this.$notify.error("問題が発生しました");
+      return;
+    }
+
+    if (isSuccess) {
       return;
     }
 
@@ -182,25 +189,30 @@ export default class Login extends Vue {
 
   /**
    * ユーザーが認証済みの場合に、リダイレクトを行う.
+   *
+   * @return
+   *   リダイレクトが行われたか否か.
    */
-  public async redirectIfAuthenticated(): Promise<void> {
+  public async redirectIfAuthenticated(): Promise<boolean> {
     await this.$apiToken.actions.setUpToken();
 
     if (!this.$apiToken.getters.isApiTokenStored) {
-      return;
+      return false;
     }
 
     try {
       await this.$apiToken.actions.verifyCrediantials();
     } catch (e) {
       if (e instanceof UnauthorizedError) {
-        return;
+        return false;
       }
 
       throw e;
     }
 
     this.$router.push({ name: routeNames.dashboard });
+
+    return true;
   }
 
   /**
