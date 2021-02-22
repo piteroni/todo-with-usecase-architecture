@@ -148,7 +148,7 @@ export default class LoginForm extends Vue {
   }
 
   /**
-   * メールアドレス欄のバリデーションルールを取得する.
+   * パスワード欄のバリデーションルールを取得する.
    */
   public get passwordRules(): Array<Function> {
     return [
@@ -177,8 +177,8 @@ export default class LoginForm extends Vue {
       if (e instanceof UnauthorizedError) {
         this.feedbackError("ログインに失敗しました、入力内容をご確認下さい");
       } else {
-        this.$notify.error("問題が発生しました");
         console.error(e);
+        this.$notify.error("問題が発生しました");
       }
 
       return;
