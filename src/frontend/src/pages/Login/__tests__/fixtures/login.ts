@@ -1,30 +1,58 @@
-import { PostLoginResponse } from "@/api/Identification/types";
-import flushPromises from "flush-promises";
-import VueRouter, { RouteConfig } from "vue-router";
+import { Module } from "vuex-smart-module";
+import {
+  ApiTokenActions, ApiTokenGetters, ApiTokenMutations, ApiTokenState
+} from "@/store/modules/apiToken";
+import { ServerError, UnauthorizedError } from "@/api/exceptions";
 
-export const routes: Array<RouteConfig> = [
-  {
-    path: "/dashboard",
-    name: "dashboard",
-    component: { template: "<div></div>" }
+// 通常のスタブ
+export const apiTokenStub = new Module({
+  state: ApiTokenState,
+  getters: ApiTokenGetters,
+  mutations: ApiTokenMutations,
+  actions: ApiTokenActions,
+});
+
+apiTokenStub.options.actions = class extends ApiTokenActions {
+  // 認証例外を発生させるようにする
+  public async verifyCrediantials() {
+    throw new UnauthorizedError("message", 1, "code");
   }
-];
+};
 
-export const router = new VueRouter({
-  mode: "history",
-  routes,
+// 認証済みのスタブ
+export const apiTokenStubWithAuthed = new Module({
+  state: ApiTokenState,
+  getters: ApiTokenGetters,
+  mutations: ApiTokenMutations,
+  actions: ApiTokenActions,
 });
 
-const loginReturnValue = "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdO";
+apiTokenStubWithAuthed.options.actions = class extends ApiTokenActions {
+  // トークンを無条件で更新するようにする
+  public setUpToken(): void {
+    this.mutations.update("token");
+  }
 
-export const loginMock = async (): Promise<PostLoginResponse> => ({
-  apiToken: loginReturnValue
+  // 認証例外を発生しないように空のメソッドを宣言するようにする
+  public async verifyCrediantials(): Promise<void> {
+    return;
+  }
+};
+
+// 例外を送出するスタブ
+export const apiTokenStubWithException = new Module({
+  state: ApiTokenState,
+  getters: ApiTokenGetters,
+  mutations: ApiTokenMutations,
+  actions: ApiTokenActions,
 });
 
-export const waitUntilForMounted = async (): Promise<void> => {
-  await flushPromises();
-}
+apiTokenStubWithException.options.actions = class extends ApiTokenActions {
+  public setUpToken(): void {
+    this.mutations.update("token");
+  }
 
-export const waitUntilAuthenticated = async (): Promise<void> => {
-  await flushPromises();
-}
+  public async verifyCrediantials(): Promise<void> {
+    throw new ServerError("message");
+  }
+};

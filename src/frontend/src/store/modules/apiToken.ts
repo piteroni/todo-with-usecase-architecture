@@ -37,12 +37,12 @@ export class ApiTokenMutations extends Mutations<ApiToken> {
   }
 }
 
-type FetchApiTokenParameter = {
+export type FetchApiTokenParameter = {
   email: string;
   password: string;
 }
 
-export class ApiTokenActions extends Actions<ApiToken, any, ApiTokenMutations> {
+export class ApiTokenActions extends Actions<ApiToken, ApiTokenGetters, ApiTokenMutations, ApiTokenActions> {
   @Api(types.api.Identification)
   private $identification!: Identification;
 
@@ -59,7 +59,7 @@ export class ApiTokenActions extends Actions<ApiToken, any, ApiTokenMutations> {
   }
 
   /**
-   * サーバーからAPI Tokenを取得する.
+   * サーバーからAPI Tokenを取得し、ローカルに保存する.
    *
    * @param payload
    *   APIに送信する認証パラメーター.

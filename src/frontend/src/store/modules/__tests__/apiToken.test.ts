@@ -55,7 +55,7 @@ describe("apiToken.ts", () => {
     expect(store.state.apiToken.token).toBe(emptyValue);
   });
 
-  it("fetchメソッドを呼ぶと、サーバーから取得したAPI TokenがLocalStorageとStateに保存される", async () => {
+  it("fetchApiTokenメソッドを呼ぶと、サーバーから取得したAPI TokenがLocalStorageとStateに保存される", async () => {
     await context.actions.fetchApiToken({ email: "test@example.com", password: "password" });
 
     expect(context.state.token).toBe(loginReturnValue);
