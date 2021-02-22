@@ -80,6 +80,7 @@ describe("Login.vue", () => {
 
     vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
 
+    // 実装にconsole.errorに例外を出力する箇所があるので、テストランナーに表示させないようにする
     const stderrStub = jest.spyOn(console, "error");
 
     stderrStub.mockImplementation(input => input);
