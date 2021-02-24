@@ -35,7 +35,7 @@ apiTokenStubWithAuthed.options.actions = class extends ApiTokenActions {
 
   // 認証例外を発生しないように空のメソッドを宣言するようにする
   public async verifyCrediantials(): Promise<void> {
-    return;
+
   }
 };
 

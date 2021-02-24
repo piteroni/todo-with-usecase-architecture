@@ -48,80 +48,82 @@ describe("Login.vue", () => {
     expect(login.find("login-form-stub").exists()).toBeFalsy();
   });
 
-  it("ローカルストレージにトークンが保存されていない場合に、ログインフォームが表示される", async () => {
-    const login = shallowMount(Login, {
-      localVue,
-      vuetify,
-      router,
+  describe("ログインユーザーの資格情報の検証、及び検証結果を受けた動作", () => {
+    it("ローカルストレージにトークンが保存されていない場合に、ログインフォームが表示される", async () => {
+      const login = shallowMount(Login, {
+        localVue,
+        vuetify,
+        router,
+      });
+
+      await waitUntilForMounted();
+
+      expect(login.find("login-form-stub").exists()).toBeTruthy();
     });
 
-    await waitUntilForMounted();
+    it("ローカルストレージに保存されているトークンが有効で無い場合に、ログインフォームが表示される", async () => {
+      window.localStorage.setItem("api-token", "incorrect-token");
 
-    expect(login.find("login-form-stub").exists()).toBeTruthy();
-  });
+      const login = shallowMount(Login, {
+        localVue,
+        vuetify,
+        router,
+      });
 
-  it("ローカルストレージ保存されているトークンが有効で無い場合に、ログインフォームが表示される", async () => {
-    window.localStorage.setItem("api-token", "incorrect-token");
+      await waitUntilForMounted();
 
-    const login = shallowMount(Login, {
-      localVue,
-      vuetify,
-      router,
+      expect(login.find("login-form-stub").exists()).toBeTruthy();
     });
 
-    await waitUntilForMounted();
+    it("トークンの検証処理中にUnauthorizedエラー以外が発生した場合に、エラーメッセージが通知される", async () => {
+      store = createStore({ apiTokenStubWithException });
+      context = apiTokenStubWithException.context(store);
 
-    expect(login.find("login-form-stub").exists()).toBeTruthy();
-  });
+      vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
 
-  it("トークンの検証処理中にUnauthorizedエラー以外が発生した場合に、エラーメッセージが通知される", async () => {
-    store = createStore({ apiTokenStubWithException });
-    context = apiTokenStubWithException.context(store);
+      // 実装にconsole.errorに例外を出力する箇所があるので、テストランナーに表示させないようにする
+      const stderrStub = jest.spyOn(console, "error");
 
-    vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
+      stderrStub.mockImplementation(input => input);
 
-    // 実装にconsole.errorに例外を出力する箇所があるので、テストランナーに表示させないようにする
-    const stderrStub = jest.spyOn(console, "error");
+      const error = jest.fn();
 
-    stderrStub.mockImplementation(input => input);
-
-    const error = jest.fn();
-
-    shallowMount(Login, {
-      localVue,
-      vuetify,
-      router,
-      mocks: {
-        $notify: {
-          error
+      shallowMount(Login, {
+        localVue,
+        vuetify,
+        router,
+        mocks: {
+          $notify: {
+            error
+          }
         }
-      }
+      });
+
+      await waitUntilForMounted();
+
+      stderrStub.mockReset();
+      stderrStub.mockRestore();
+
+      expect(error).toBeCalled();
+      // エラー通知メソッドにメッセージが渡されること
+      expect(error.mock.calls[0][0]).not.toBe("");
     });
 
-    await waitUntilForMounted();
+    it("認証済みの場合に、ダッシュボード画面に推移する", async () => {
+      store = createStore({ apiTokenStubWithAuthed });
+      context = apiTokenStubWithAuthed.context(store);
 
-    stderrStub.mockReset();
-    stderrStub.mockRestore();
+      vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
 
-    expect(error).toBeCalled();
-    // エラー通知メソッドにメッセージが渡されること
-    expect(error.mock.calls[0][0]).not.toBe("");
-  });
+      const login = shallowMount(Login, {
+        localVue,
+        vuetify,
+        router,
+      });
 
-  it("認証済みの場合に、ダッシュボード画面に推移する", async () => {
-    store = createStore({ apiTokenStubWithAuthed });
-    context = apiTokenStubWithAuthed.context(store);
+      await waitUntilForMounted();
 
-    vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
-
-    const login = shallowMount(Login, {
-      localVue,
-      vuetify,
-      router,
+      expect("/dashboard").toBe(login.vm.$route.path);
     });
-
-    await waitUntilForMounted();
-
-    expect("/dashboard").toBe(login.vm.$route.path);
   });
 });

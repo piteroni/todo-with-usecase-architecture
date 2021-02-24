@@ -6,6 +6,7 @@ export const types = {
   },
   vuexContexts: {
     apiToken: Symbol.for("vuexContexts.apiToken"),
+    task: Symbol.for("vuexContexts.task"),
   },
   services: {
     ApiTokenReader: Symbol.for("services.ApiTokenReader")
