@@ -92,4 +92,4 @@ export const task = new Module({
   actions: TaskActions
 });
 
-export type TaskContext = Context<Module<TaskState, BG<TaskState>, TaskMutations, TaskActions, any>>;
+export type TaskContext = Context<Module<TaskState, BG<TaskState>, TaskMutations, TaskActions>>;
