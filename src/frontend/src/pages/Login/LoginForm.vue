@@ -122,10 +122,10 @@ export default class LoginForm extends Vue {
   public errorMessage = "";
 
   /**
-   * フォーム内の入力値が有効であるか取得する.
+   * フォーム内の入力値が有効か取得する.
    *
    * @return
-   *   フォーム内の入力値が有効であるか.
+   *   フォーム内の入力値が有効か.
    */
   public get isValid(): boolean {
     return this.form.validate();

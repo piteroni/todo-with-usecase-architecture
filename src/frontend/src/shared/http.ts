@@ -396,20 +396,11 @@ export class StatusCode {
   }
 
   /**
-   * 未認証であることを表す.
-   */
-  get isUnauthroized(): boolean {
-    return this.statusCode === HttpStatusCode.UNAUTHORIZED;
-  }
-
-  /**
-   * 不正なリクエストであることを表す.
+   * 不正なリクエストであることを表す
+   * NOT_FOUND、FORBIDDENなどの開発者側が意図しないステータスは含めない.
    */
   get isBadRequest(): boolean {
-    return (
-      this.statusCode === HttpStatusCode.BAD_REQUEST
-        || this.statusCode === HttpStatusCode.UNPROCESSABLE_ENTITY
-    );
+    return this.statusCode === HttpStatusCode.UNPROCESSABLE_ENTITY;
   }
 
   /**

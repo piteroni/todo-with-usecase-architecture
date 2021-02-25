@@ -6,4 +6,13 @@ export abstract class RuntimeError extends Error {
     super(message);
     Object.setPrototypeOf(this, new.target.prototype);
   }
+
+  /**
+   * クラス名を取得する.
+   *
+   * @return クラス名.
+   */
+  public getClassName(): string {
+    return this.constructor.name;
+  }
 }

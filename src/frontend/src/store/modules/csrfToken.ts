@@ -1,12 +1,12 @@
 import { Mutations, Module } from "vuex-smart-module";
 
-export class CsrfToken implements CsrfTokenState {
-  public token = "";
+export interface CsrfTokenState {
+  token: string;
 }
 
-export type CsrfTokenState = {
-  token: string;
-};
+class CsrfToken implements CsrfTokenState {
+  public token = "";
+}
 
 export class CsrfTokenMutations extends Mutations<CsrfTokenState> {
   /**

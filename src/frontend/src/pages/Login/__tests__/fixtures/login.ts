@@ -1,16 +1,8 @@
-import { Module } from "vuex-smart-module";
-import {
-  ApiTokenActions, ApiTokenGetters, ApiTokenMutations, ApiTokenState
-} from "@/store/modules/apiToken";
 import { ServerError, UnauthorizedError } from "@/api/exceptions";
+import { apiToken, ApiTokenActions } from "@/store/modules/apiToken";
 
 // 通常のスタブ
-export const apiTokenStub = new Module({
-  state: ApiTokenState,
-  getters: ApiTokenGetters,
-  mutations: ApiTokenMutations,
-  actions: ApiTokenActions,
-});
+export const apiTokenStub = apiToken.clone();
 
 apiTokenStub.options.actions = class extends ApiTokenActions {
   // 認証例外を発生させるようにする
@@ -20,36 +12,27 @@ apiTokenStub.options.actions = class extends ApiTokenActions {
 };
 
 // 認証済みのスタブ
-export const apiTokenStubWithAuthed = new Module({
-  state: ApiTokenState,
-  getters: ApiTokenGetters,
-  mutations: ApiTokenMutations,
-  actions: ApiTokenActions,
-});
+export const apiTokenStubWithAuthed = apiToken.clone();
 
 apiTokenStubWithAuthed.options.actions = class extends ApiTokenActions {
   // トークンを無条件で更新するようにする
   public setUpToken(): void {
-    this.mutations.save("token");
+    this.state.token = "token";
   }
 
   // 認証例外を発生しないように空のメソッドを宣言するようにする
+  /* eslint-disable @typescript-eslint/no-empty-function */
   public async verifyCrediantials(): Promise<void> {
 
   }
 };
 
 // 例外を送出するスタブ
-export const apiTokenStubWithException = new Module({
-  state: ApiTokenState,
-  getters: ApiTokenGetters,
-  mutations: ApiTokenMutations,
-  actions: ApiTokenActions,
-});
+export const apiTokenStubWithException = apiToken.clone();
 
 apiTokenStubWithException.options.actions = class extends ApiTokenActions {
   public setUpToken(): void {
-    this.mutations.save("token");
+    this.state.token = "token";
   }
 
   public async verifyCrediantials(): Promise<void> {

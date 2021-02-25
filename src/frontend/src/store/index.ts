@@ -1,13 +1,17 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { Store } from "vuex";
 import { createStore, Module } from "vuex-smart-module";
-import { task } from "@/store/modules/task";
-import { apiToken } from "@/store/modules/apiToken";
-import { Store } from "@/store/types";
+import { task, TaskState } from "@/store/modules/task";
+import { apiToken, ApiTokenState } from "@/store/modules/apiToken";
 
 Vue.use(Vuex);
 
-export const store: Store = createStore(
+export type StoreType = Store<{
+  task: TaskState;
+  apiToken: ApiTokenState;
+}>;
+
+export const store: StoreType = createStore(
   new Module({
     modules: {
       task,

@@ -11,7 +11,7 @@ export interface ApiTokenState {
   token: string;
 }
 
-export class ApiToken implements ApiTokenState {
+class ApiToken implements ApiTokenState {
   public token = "";
 }
 
@@ -19,7 +19,7 @@ export class ApiTokenGetters extends Getters<ApiTokenState> {
   /**
    * API Tokenが保存されているか取得する.
    *
-   * @returns API Tokenが保存されている場合、trueを返す.
+   * @returns API Tokenが保存されているか.
    */
   get isApiTokenStored(): boolean {
     return this.state.token !== "";
@@ -61,15 +61,15 @@ export class ApiTokenActions extends Actions<ApiTokenState, ApiTokenGetters, Api
   /**
    * 認証APIにリクエストを発行し、返されたAPI Tokenをローカルに保存する.
    *
-   * @param payload
+   * @param params
    *   APIに送信する認証パラメーター.
    * @throws {UnauthorizedError}
    *   認証に失敗した場合に送出される.
    * @throws {ApiError}
    *   APIとの通信に失敗した場合に発生する.
    */
-  public async fetchApiToken(payload: FetchApiTokenParameter): Promise<void> {
-    const { email, password } = payload;
+  public async fetchApiToken(params: FetchApiTokenParameter): Promise<void> {
+    const { email, password } = params;
     const response = await this.$identification.login(email, password);
 
     window.localStorage.setItem(apiTokenKey, response.apiToken ?? "");
@@ -78,9 +78,11 @@ export class ApiTokenActions extends Actions<ApiTokenState, ApiTokenGetters, Api
 
   /**
    * API Tokenが有効かサーバーに問い合わせ検証する.
-   * 検証に失敗した場合に、{ApiError}例外を送出する.
    *
-   * @throws {APiError}
+   * @throws {UnauthorizedError}
+   *   ログインユーザーの資格情報が有効では無い場合に送出される.
+   * @throws {ApiError}
+   *   API通信時にエラーが発生した場合に送出される.
    */
   public async verifyCrediantials(): Promise<void> {
     await this.$credential.verify();
@@ -88,6 +90,9 @@ export class ApiTokenActions extends Actions<ApiTokenState, ApiTokenGetters, Api
 
   /**
    * サーバー、及びローカルの保持しているAPI Tokenを無効化する.
+   *
+   * @throws {ApiError}
+   *   API通信時にエラーが発生した場合に送出される.
    */
   public async deactivateApiToken(): Promise<void> {
     await this.$identification.logout();

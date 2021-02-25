@@ -1,5 +1,4 @@
 import { createStore as baseCreateStore, Module } from "vuex-smart-module";
-import { ModuleType } from "@/store/types";
 
 /**
  * Storeを作成する.
@@ -9,4 +8,4 @@ import { ModuleType } from "@/store/types";
  * @returns
  *   作成済みのStore.
  */
-export const createStore = (modules: Record<string, ModuleType>) => baseCreateStore(new Module({ modules }));
+export const createStore = (modules: Record<string, Module<any, any, any, any, any>>) => baseCreateStore(new Module({ modules }));

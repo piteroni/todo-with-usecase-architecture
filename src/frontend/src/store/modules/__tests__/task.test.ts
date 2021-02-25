@@ -2,7 +2,7 @@ import Vuex, { Store } from "vuex";
 import { createLocalVue } from "@vue/test-utils";
 import { createStore } from "@/store/fixture";
 import {
-  task as taskModule, Task, TaskContext, TaskState
+  task, Task, TaskContext, TaskState
 } from "@/store/modules/task";
 import { types } from "@/providers/types";
 import { container } from "@/providers/containers/api";
@@ -20,8 +20,8 @@ describe("task.ts", () => {
   let context: TaskContext;
 
   beforeEach(() => {
-    store = createStore({ taskModule });
-    context = taskModule.context(store);
+    store = createStore({ task });
+    context = task.context(store);
   });
 
   describe("mutations", () => {

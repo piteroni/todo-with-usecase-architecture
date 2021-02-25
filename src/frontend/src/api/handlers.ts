@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import {
-  ApiErrorResponse, ApiError, ClientError, ServerError, UnauthorizedError
+  ApiErrorResponse, ApiError, ClientError, ServerError
 } from "@/api/exceptions";
 import { StatusCode } from "@/shared/http";
 
@@ -24,11 +24,6 @@ export const throwApiError = (e: AxiosError<ApiErrorResponse>): void => {
 
   const statusCode = new StatusCode(e.response.status);
 
-  if (statusCode.isUnauthroized) {
-    throw new UnauthorizedError(e.response.data.message, e.response.status, e.response.data.code);
-  }
-
-  // NOT_FOUND、FORBIDDENなどのステータスは開発者側が意図しないステータスなので、ClientErrorには含めない.
   if (statusCode.isBadRequest) {
     throw new ClientError(e.response.data.message, e.response.status, e.response.data.code);
   }

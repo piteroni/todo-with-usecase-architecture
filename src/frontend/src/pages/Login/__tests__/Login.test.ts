@@ -24,7 +24,7 @@ describe("Login.vue", () => {
 
   beforeEach(() => {
     vuetify = new Vuetify();
-    store = createStore({ apiTokenStub });
+    store = createStore({ apiToken: apiTokenStub });
     context = apiTokenStub.context(store);
     router = new VueRouter({
       mode: "abstract",

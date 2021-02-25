@@ -2,6 +2,8 @@ import { injectable } from "inversify";
 import { AxiosResponse } from "axios";
 import { throwApiError } from "@/api/handlers";
 import { api } from "@/api/base";
+import { ApiError, UnauthorizedError } from "@/api/exceptions";
+import { HttpStatusCode } from "@/shared/http";
 import { PostLoginResponse } from "./types";
 
 export const resource = "/identification";
@@ -25,7 +27,21 @@ export class Identification {
   public async login(email: string, password: string): Promise<PostLoginResponse> {
     const data = { email, password };
 
-    const response = await api.post(`${resource}/login`, data).catch(throwApiError);
+    let response: void | AxiosResponse<any>;
+
+    try {
+      response = await api.post(`${resource}/login`, data).catch(throwApiError);
+    } catch (e) {
+      if (e.constructor.name === ApiError.name) {
+        const apiError = e as ApiError;
+
+        if (apiError.statusCode === HttpStatusCode.UNAUTHORIZED) {
+          throw new UnauthorizedError(apiError.message, apiError.statusCode, apiError.code);
+        }
+      }
+
+      throw e;
+    }
 
     return (response as AxiosResponse<PostLoginResponse>).data;
   }
