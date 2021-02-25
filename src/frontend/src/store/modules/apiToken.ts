@@ -1,5 +1,5 @@
 import {
-  Mutations, Getters, Actions, Module, Context
+  Mutations, Getters, Actions, Module
 } from "vuex-smart-module";
 import { Api } from "@/providers/containers/api";
 import { types } from "@/providers/types";
@@ -7,11 +7,11 @@ import { Identification } from "@/api/Identification";
 import { apiTokenKey } from "@/shared/localStorageKeys";
 import { Credential } from "@/api/Credential";
 
-export type ApiToken = {
+export interface ApiTokenState {
   token: string;
-};
+}
 
-export class ApiTokenState implements ApiToken {
+export class ApiToken implements ApiTokenState {
   public token = "";
 }
 
@@ -26,7 +26,7 @@ export class ApiTokenGetters extends Getters<ApiTokenState> {
   }
 }
 
-export class ApiTokenMutations extends Mutations<ApiToken> {
+export class ApiTokenMutations extends Mutations<ApiTokenState> {
   /**
    * APIトークンを保存する.
    *
@@ -42,7 +42,7 @@ export type FetchApiTokenParameter = {
   password: string;
 }
 
-export class ApiTokenActions extends Actions<ApiToken, ApiTokenGetters, ApiTokenMutations, ApiTokenActions> {
+export class ApiTokenActions extends Actions<ApiTokenState, ApiTokenGetters, ApiTokenMutations, ApiTokenActions> {
   @Api(types.api.Identification)
   private $identification!: Identification;
 
@@ -99,10 +99,10 @@ export class ApiTokenActions extends Actions<ApiToken, ApiTokenGetters, ApiToken
 }
 
 export const apiToken = new Module({
-  state: ApiTokenState,
+  state: ApiToken,
   getters: ApiTokenGetters,
   mutations: ApiTokenMutations,
   actions: ApiTokenActions
 });
 
-export type ApiTokenContext = Context<Module<ApiToken, ApiTokenGetters, ApiTokenMutations, ApiTokenActions, any>>;
+export type ApiTokenContext = ReturnType<typeof apiToken.context>;

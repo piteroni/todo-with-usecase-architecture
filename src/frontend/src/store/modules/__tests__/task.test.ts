@@ -2,12 +2,14 @@ import Vuex, { Store } from "vuex";
 import { createLocalVue } from "@vue/test-utils";
 import { createStore } from "@/store/fixture";
 import {
-  task, Task, TaskContext, TaskState
+  task as taskModule, Task, TaskContext, TaskState
 } from "@/store/modules/task";
 import { types } from "@/providers/types";
 import { container } from "@/providers/containers/api";
 import { User } from "@/api/User";
-import { getTasksMock, createTaskMock, deleteTaskMock, UserMock } from "./fixtures/task";
+import {
+  getTasksMock, createTaskMock, deleteTaskMock, UserMock
+} from "./fixtures/task";
 
 const localVue = createLocalVue();
 
@@ -18,8 +20,8 @@ describe("task.ts", () => {
   let context: TaskContext;
 
   beforeEach(() => {
-    store = createStore({ task });
-    context = task.context(store);
+    store = createStore({ taskModule });
+    context = taskModule.context(store);
   });
 
   describe("mutations", () => {
@@ -46,7 +48,7 @@ describe("task.ts", () => {
   });
 
   describe("actions", () => {
-    beforeEach(() => {
+    beforeAll(() => {
       container.rebind<User>(types.api.User).toConstantValue(new UserMock());
     });
 

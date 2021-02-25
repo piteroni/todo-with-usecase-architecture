@@ -1,4 +1,4 @@
-import { Mutations, Module, Context } from "vuex-smart-module";
+import { Mutations, Module } from "vuex-smart-module";
 
 export class CsrfToken implements CsrfTokenState {
   public token = "";
@@ -10,11 +10,11 @@ export type CsrfTokenState = {
 
 export class CsrfTokenMutations extends Mutations<CsrfTokenState> {
   /**
-   * CSRFトークンを更新する.
+   * CSRFトークンを保存する.
    *
    * @param token CSRFトークン.
    */
-  public update(token: string): void {
+  public save(token: string): void {
     this.state.token = token;
   }
 }
@@ -24,4 +24,4 @@ export const csrfToken = new Module({
   mutations: CsrfTokenMutations,
 });
 
-export type CsrfTokenContext = Context<Module<CsrfToken, any, CsrfTokenMutations, any, any>>;
+export type CsrfTokenContext = ReturnType<typeof csrfToken.context>;

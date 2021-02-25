@@ -1,10 +1,10 @@
 import { User } from "@/api/User";
 
-export const createTaskMock = jest.fn((_: string) => {});
+export const createTaskMock = jest.fn();
 
 export const getTasksMock = jest.fn();
 
-export const deleteTaskMock = jest.fn((_: number) => {});
+export const deleteTaskMock = jest.fn();
 
 export class UserMock extends User {
   public async createTask(taskName: string) {

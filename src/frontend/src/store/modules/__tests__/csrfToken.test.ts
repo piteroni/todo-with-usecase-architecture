@@ -16,10 +16,10 @@ describe("csrfToken.ts", () => {
     context = csrfToken.context(store);
   });
 
-  it("CSRFトークンを更新する", () => {
+  it("CSRFトークンを保存することができる", () => {
     const token = "rFUTKkeOUUvpD6cuUxUoKHsjdpP7P65LtuFLYVqb";
 
-    context.mutations.update(token);
+    context.mutations.save(token);
 
     expect(context.state.token).toBe(token);
     expect(store.state.csrfToken.token).toBe(token);

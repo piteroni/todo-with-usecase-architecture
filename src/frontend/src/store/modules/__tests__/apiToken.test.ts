@@ -7,7 +7,8 @@ import {
 import { container } from "@/providers/containers/api";
 import { types } from "@/providers/types";
 import { apiTokenKey } from "@/shared/localStorageKeys";
-import { login } from "./fixtures/apiToken";
+import { Identification } from "@/api/Identification";
+import { IdentificationMock, loginMock } from "./fixtures/apiToken";
 
 const localVue = createLocalVue();
 
@@ -20,10 +21,6 @@ describe("apiToken.ts", () => {
   beforeEach(() => {
     store = createStore({ apiToken });
     context = apiToken.context(store);
-
-    container.rebind(types.api.Identification).toConstantValue({ login });
-
-    window.localStorage.clear();
   });
 
   describe("getters", () => {
@@ -50,6 +47,15 @@ describe("apiToken.ts", () => {
   });
 
   describe("actions", () => {
+    beforeAll(() => {
+      container.rebind<Identification>(types.api.Identification).toConstantValue(new IdentificationMock());
+      window.localStorage.clear();
+    });
+
+    afterEach(() => {
+      window.localStorage.clear();
+    });
+
     it("LocalStorageに保存したAPIトークンをstateに設定できる", () => {
       const token = "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdF";
 
@@ -64,8 +70,6 @@ describe("apiToken.ts", () => {
     it("LocalStorageにAPIトークンが保存されていない場合、空文字がstateに設定される", () => {
       const expected = "";
 
-      window.localStorage.clear();
-
       context.actions.setUpToken();
 
       expect(context.state.token).toBe(expected);
@@ -77,6 +81,7 @@ describe("apiToken.ts", () => {
 
       await context.actions.fetchApiToken({ email: "test@example.com", password: "password" });
 
+      expect(loginMock).toBeCalledWith("test@example.com", "password");
       expect(window.localStorage.getItem(apiTokenKey)).toBe(expected);
       expect(context.state.token).toBe(expected);
       expect(store.state.apiToken.token).toBe(expected);

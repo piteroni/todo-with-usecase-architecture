@@ -4,7 +4,7 @@ import { ModuleType } from "@/store/types";
 /**
  * Storeを作成する.
  *
- * @param module
+ * @param modules
  *   store modulesに指定するモジュール
  * @returns
  *   作成済みのStore.

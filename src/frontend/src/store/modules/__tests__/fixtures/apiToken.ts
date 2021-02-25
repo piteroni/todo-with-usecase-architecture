@@ -1,7 +1,12 @@
-import { PostLoginResponse } from "@/api/Identification/types";
+import { Identification } from "@/api/Identification";
 
-export const loginReturnValue = "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdO";
+export const loginMock = jest.fn();
+export class IdentificationMock extends Identification {
+  public async login(email: string, password: string) {
+    loginMock(email, password);
 
-export const login = async (): Promise<PostLoginResponse> => ({
-  apiToken: loginReturnValue
-});
+    return {
+      apiToken: "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdO"
+    };
+  }
+}

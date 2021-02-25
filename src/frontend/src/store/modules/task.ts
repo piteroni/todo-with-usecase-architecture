@@ -1,21 +1,21 @@
 import {
-  Mutations, Actions, Module, Context,
+  Mutations, Actions, Module
 } from "vuex-smart-module";
 import { BG } from "vuex-smart-module/lib/assets";
 import { types } from "@/providers/types";
 import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
 
-export type Task = {
+export interface Task {
   id: number;
   name: string;
-};
+}
 
-export type TaskList = {
+export interface TaskState {
   tasks: Task[];
 }
 
-export class TaskState implements TaskList {
+class TaskStateImpl implements TaskState {
   public tasks: Task[] = [];
 }
 
@@ -87,9 +87,9 @@ export class TaskActions extends Actions<TaskState, BG<TaskState>, TaskMutations
 }
 
 export const task = new Module({
-  state: TaskState,
+  state: TaskStateImpl,
   mutations: TaskMutations,
   actions: TaskActions
 });
 
-export type TaskContext = Context<Module<TaskState, BG<TaskState>, TaskMutations, TaskActions>>;
+export type TaskContext = ReturnType<typeof task.context>;
