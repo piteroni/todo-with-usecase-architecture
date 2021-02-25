@@ -19,7 +19,7 @@ export class ApiTokenGetters extends Getters<ApiTokenState> {
   /**
    * API Tokenが保存されているか取得する.
    *
-   * @returns 認証済みであるか.
+   * @returns API Tokenが保存されている場合、trueを返す.
    */
   get isApiTokenStored(): boolean {
     return this.state.token !== "";
@@ -28,11 +28,11 @@ export class ApiTokenGetters extends Getters<ApiTokenState> {
 
 export class ApiTokenMutations extends Mutations<ApiToken> {
   /**
-   * APIトークンを更新する.
+   * APIトークンを保存する.
    *
    * @param token APIトークン.
    */
-  public update(token: string): void {
+  public save(token: string): void {
     this.state.token = token;
   }
 }
@@ -55,11 +55,11 @@ export class ApiTokenActions extends Actions<ApiToken, ApiTokenGetters, ApiToken
   public setUpToken(): void {
     const token = window.localStorage.getItem(apiTokenKey) ?? "";
 
-    this.mutations.update(token);
+    this.mutations.save(token);
   }
 
   /**
-   * サーバーからAPI Tokenを取得し、ローカルに保存する.
+   * 認証APIにリクエストを発行し、返されたAPI Tokenをローカルに保存する.
    *
    * @param payload
    *   APIに送信する認証パラメーター.
@@ -73,7 +73,7 @@ export class ApiTokenActions extends Actions<ApiToken, ApiTokenGetters, ApiToken
     const response = await this.$identification.login(email, password);
 
     window.localStorage.setItem(apiTokenKey, response.apiToken ?? "");
-    this.mutations.update(response.apiToken);
+    this.mutations.save(response.apiToken);
   }
 
   /**
@@ -94,7 +94,7 @@ export class ApiTokenActions extends Actions<ApiToken, ApiTokenGetters, ApiToken
 
     window.localStorage.setItem(apiTokenKey, "");
 
-    this.mutations.update("");
+    this.mutations.save("");
   }
 }
 

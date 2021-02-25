@@ -33,11 +33,12 @@ describe("LoginForm.vue", () => {
       routes,
     });
 
-    fetchApiTokenMock.mockClear();
-    fetchApiTokenMockWithAuthFailure.mockClear();
-
     vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
+  });
 
+  afterEach(() => {
+    fetchApiTokenMock.mockReset();
+    fetchApiTokenMockWithAuthFailure.mockReset();
     window.localStorage.clear();
   });
 

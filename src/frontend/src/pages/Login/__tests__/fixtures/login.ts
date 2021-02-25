@@ -30,7 +30,7 @@ export const apiTokenStubWithAuthed = new Module({
 apiTokenStubWithAuthed.options.actions = class extends ApiTokenActions {
   // トークンを無条件で更新するようにする
   public setUpToken(): void {
-    this.mutations.update("token");
+    this.mutations.save("token");
   }
 
   // 認証例外を発生しないように空のメソッドを宣言するようにする
@@ -49,7 +49,7 @@ export const apiTokenStubWithException = new Module({
 
 apiTokenStubWithException.options.actions = class extends ApiTokenActions {
   public setUpToken(): void {
-    this.mutations.update("token");
+    this.mutations.save("token");
   }
 
   public async verifyCrediantials(): Promise<void> {

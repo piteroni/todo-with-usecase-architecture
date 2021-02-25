@@ -7,7 +7,7 @@ import {
 import { container } from "@/providers/containers/api";
 import { types } from "@/providers/types";
 import { apiTokenKey } from "@/shared/localStorageKeys";
-import { login, loginReturnValue } from "./fixtures/apiToken";
+import { login } from "./fixtures/apiToken";
 
 const localVue = createLocalVue();
 
@@ -26,50 +26,60 @@ describe("apiToken.ts", () => {
     window.localStorage.clear();
   });
 
-  it("API Tokenをupdateメソッドに渡すと、Stateにトークンが保存される", () => {
-    const token = "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdF";
+  describe("getters", () => {
+    it("stateにAPIトークンが保存されているか否かを取得できる", () => {
+      context.state.token = "token";
 
-    context.mutations.update(token);
+      expect(context.getters.isApiTokenStored).toBe(true);
+    });
 
-    expect(context.state.token).toBe(token);
-    expect(store.state.apiToken.token).toBe(token);
+    it("stateにAPIトークンが保存されていない場合、真偽値falseを返す", () => {
+      expect(context.getters.isApiTokenStored).toBe(false);
+    });
   });
 
-  it("localStorageにAPI Tokenを保存しsetUpTokenを呼び出すと、保存したトークンがStateに設定される", () => {
-    const token = "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdF";
+  describe("mutations", () => {
+    it("stateにAPIトークンを保存できる", () => {
+      const token = "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdF";
 
-    window.localStorage.setItem(apiTokenKey, token);
+      context.mutations.save(token);
 
-    context.actions.setUpToken();
-
-    expect(context.state.token).toBe(token);
-    expect(store.state.apiToken.token).toBe(token);
+      expect(context.state.token).toBe(token);
+      expect(store.state.apiToken.token).toBe(token);
+    });
   });
 
-  it("LocalStorageにAPI Tokenを保存せずsetUpTokenを呼び出すと、空文字がStateに設定される", () => {
-    const emptyValue = "";
+  describe("actions", () => {
+    it("LocalStorageに保存したAPIトークンをstateに設定できる", () => {
+      const token = "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdF";
 
-    context.actions.setUpToken();
+      window.localStorage.setItem(apiTokenKey, token);
 
-    expect(context.state.token).toBe(emptyValue);
-    expect(store.state.apiToken.token).toBe(emptyValue);
-  });
+      context.actions.setUpToken();
 
-  it("fetchApiTokenメソッドを呼ぶと、サーバーから取得したAPI TokenがLocalStorageとStateに保存される", async () => {
-    await context.actions.fetchApiToken({ email: "test@example.com", password: "password" });
+      expect(context.state.token).toBe(token);
+      expect(store.state.apiToken.token).toBe(token);
+    });
 
-    expect(context.state.token).toBe(loginReturnValue);
-    expect(store.state.apiToken.token).toBe(loginReturnValue);
-    expect(window.localStorage.getItem(apiTokenKey)).toBe(loginReturnValue);
-  });
+    it("LocalStorageにAPIトークンが保存されていない場合、空文字がstateに設定される", () => {
+      const expected = "";
 
-  it("StateににAPI Tokenを保存すると、isApiTokenStoredはstrueを返す", () => {
-    context.mutations.update("token");
+      window.localStorage.clear();
 
-    expect(context.getters.isApiTokenStored).toBe(true);
-  });
+      context.actions.setUpToken();
 
-  it("StateににAPI Tokenを保存せず、isApiTokenStoredはtrueを返す", () => {
-    expect(context.getters.isApiTokenStored).toBe(false);
+      expect(context.state.token).toBe(expected);
+      expect(store.state.apiToken.token).toBe(expected);
+    });
+
+    it("認証APIを通じてサーバーから取得したAPIトークンをLocalStorageとstateに保存できる", async () => {
+      const expected = "qilW4Qx27iVjJiK2WOw1KBDN9EC9nJNfeCKfzkDQoC9V5roXfQVVpZyZycdO";
+
+      await context.actions.fetchApiToken({ email: "test@example.com", password: "password" });
+
+      expect(window.localStorage.getItem(apiTokenKey)).toBe(expected);
+      expect(context.state.token).toBe(expected);
+      expect(store.state.apiToken.token).toBe(expected);
+    });
   });
 });

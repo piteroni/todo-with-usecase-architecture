@@ -1,9 +1,9 @@
 import {
-  Mutations, Actions, Module, Context
+  Mutations, Actions, Module, Context,
 } from "vuex-smart-module";
-import { Api } from "@/providers/containers/api";
-import { types } from "@/providers/types";
 import { BG } from "vuex-smart-module/lib/assets";
+import { types } from "@/providers/types";
+import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
 
 export type Task = {
@@ -21,11 +21,11 @@ export class TaskState implements TaskList {
 
 export class TaskMutations extends Mutations<TaskState> {
   /**
-   * タスクリストを更新する.
+   * タスクリストを保存する.
    *
    * @param tasks タスクリスト.
    */
-  public updateTasks(tasks: Task[]): void {
+  public save(tasks: Task[]): void {
     this.state.tasks = tasks;
   }
 
@@ -64,7 +64,9 @@ export class TaskActions extends Actions<TaskState, BG<TaskState>, TaskMutations
    *   APIとの通信に失敗した場合に発生する.
    */
   public async fetchTasks(): Promise<void> {
-    this.state.tasks = await this.$user.getTasks();
+    const tasks = await this.$user.getTasks();
+
+    this.mutations.save(tasks);
   }
 
   /**
@@ -76,7 +78,9 @@ export class TaskActions extends Actions<TaskState, BG<TaskState>, TaskMutations
    *   APIとの通信に失敗した場合に発生する.
    */
   public async deleteTask(taskId: number): Promise<void> {
-    this.state.tasks = this.state.tasks.filter(t => t.id !== taskId);
+    const tasks = this.state.tasks.filter(t => t.id !== taskId);
+
+    this.mutations.save(tasks);
 
     await this.$user.deleteTask(taskId);
   }
