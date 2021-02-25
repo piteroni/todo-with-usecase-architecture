@@ -44,10 +44,10 @@ export class TaskActions extends Actions<TaskState, BG<TaskState>, TaskMutations
   private $user!: User;
 
   /**
-   * タスクの作成を行う.
+   * サーバーにタスク作成リクエストを発行し、返ってきたタスクをローカルに追加する.
    *
-   * @param task
-   *   作成するタスクに渡すパラメーター.
+   * @param taskName
+   *   作成するタスクのタスク名.
    * @throws {ApiError}
    *   APIとの通信に失敗した場合に発生する.
    */
@@ -70,7 +70,7 @@ export class TaskActions extends Actions<TaskState, BG<TaskState>, TaskMutations
   }
 
   /**
-   * タスクの削除を行う.
+   * 指定されたタスクのIDに一致するタスクを削除し、サーバーにタスク削除リクエストを発行する.
    *
    * @param taskId
    *   削除対象のタスクのID.
