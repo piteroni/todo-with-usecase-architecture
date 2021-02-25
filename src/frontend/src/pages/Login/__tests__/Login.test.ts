@@ -48,8 +48,8 @@ describe("Login.vue", () => {
     expect(login.find("login-form-stub").exists()).toBeFalsy();
   });
 
-  describe("ログインユーザーの資格情報の検証、及び検証結果を受けた動作", () => {
-    it("ローカルストレージにトークンが保存されていない場合に、ログインフォームが表示される", async () => {
+  describe("ログインユーザーの資格情報検証処理", () => {
+    it("ローカルストレージにAPIトークンが保存されていない場合に、ログインフォームが表示される", async () => {
       const login = shallowMount(Login, {
         localVue,
         vuetify,
@@ -61,7 +61,7 @@ describe("Login.vue", () => {
       expect(login.find("login-form-stub").exists()).toBeTruthy();
     });
 
-    it("ローカルストレージに保存されているトークンが有効で無い場合に、ログインフォームが表示される", async () => {
+    it("ローカルストレージに保存されているAPIトークンが有効で無い場合に、ログインフォームが表示される", async () => {
       window.localStorage.setItem("api-token", "incorrect-token");
 
       const login = shallowMount(Login, {
@@ -75,13 +75,12 @@ describe("Login.vue", () => {
       expect(login.find("login-form-stub").exists()).toBeTruthy();
     });
 
-    it("トークンの検証処理中にUnauthorizedエラー以外が発生した場合に、エラーメッセージが通知される", async () => {
+    it("APIークンの検証処理中にUnauthorizedエラー以外が発生した場合に、エラーメッセージが通知される", async () => {
       store = createStore({ apiTokenStubWithException });
       context = apiTokenStubWithException.context(store);
 
       vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
 
-      // 実装にconsole.errorに例外を出力する箇所があるので、テストランナーに表示させないようにする
       const stderrStub = jest.spyOn(console, "error");
 
       stderrStub.mockImplementation(input => input);
@@ -101,11 +100,14 @@ describe("Login.vue", () => {
 
       await waitUntilForMounted();
 
+      const stderrStubCalls = stderrStub.mock.calls;
+
       stderrStub.mockReset();
       stderrStub.mockRestore();
 
+      expect(stderrStubCalls.length > 0).toBeTruthy();
+      expect(stderrStubCalls[0][0]).not.toBe("");
       expect(error).toBeCalled();
-      // エラー通知メソッドにメッセージが渡されること
       expect(error.mock.calls[0][0]).not.toBe("");
     });
 

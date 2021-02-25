@@ -16,8 +16,8 @@ class TaskCreateUseCaseTest extends TestCase
         $authorId = User::factory()->create()->id;
         $taskName = '34a96501ddc10e38821816f29c2b49b9bfad92fafa';
 
-        $taskId = $taskCreateUseCase->createTask($authorId, $taskName);
-        $task = Task::find($taskId);
+        $task = $taskCreateUseCase->createTask($authorId, $taskName);
+        $task = Task::find($task->id());
 
         $this->assertNotNull($task);
         $this->assertSame($taskName, $task->name);

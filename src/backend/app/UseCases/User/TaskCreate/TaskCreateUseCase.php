@@ -16,18 +16,16 @@ final class TaskCreateUseCase
      *   作成者のID.
      * @param string $taskName
      *   タスク名.
-     * @return int
-     *   作成したタスクのID.
+     * @return \App\Models\Task
+     *   作成したタスク.
      * @throws \Exception
      *   SQLの実行時に失敗した場合に送出される.
      */
-    public function createTask(int $authorId, string $taskName): int
+    public function createTask(int $authorId, string $taskName): Task
     {
-        $task = Task::create([
+        return Task::create([
             'user_id' => $authorId,
             'name' => $taskName
         ]);
-
-        return $task->id;
     }
 }

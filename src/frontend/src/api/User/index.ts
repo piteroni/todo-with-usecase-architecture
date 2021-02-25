@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { injectable } from "inversify";
 import { throwApiError } from "@/api/handlers";
 import { api } from "@/api/base";
-import { GetTasksResponse } from "./types";
+import { GetTasksResponse, TaskCreateResponse } from "./types";
 
 export const resource = "/users";
 
@@ -16,10 +16,12 @@ export class User {
    * @throws {APIError}
    *   APIとの通信に失敗した場合に発生する.
    */
-  public async createTask(taskName: string): Promise<void> {
+  public async createTask(taskName: string): Promise<TaskCreateResponse> {
     const data = { taskName };
 
-    await api.post(`${resource}/current/tasks`, data).catch(throwApiError);
+    const response = await api.post(`${resource}/current/tasks`, data).catch(throwApiError);
+
+    return (response as AxiosResponse<TaskCreateResponse>).data;
   }
 
   /**

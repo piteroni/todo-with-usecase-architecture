@@ -28,6 +28,15 @@ export class TaskMutations extends Mutations<TaskState> {
   public updateTasks(tasks: Task[]): void {
     this.state.tasks = tasks;
   }
+
+  /**
+   * タスクを追加する.
+   *
+   * @param task 追加対象のタスク.
+   */
+  public addTask(task: Task): void {
+    this.state.tasks.push(task);
+  }
 }
 
 export class TaskActions extends Actions<TaskState, BG<TaskState>, TaskMutations, TaskActions> {
@@ -43,7 +52,9 @@ export class TaskActions extends Actions<TaskState, BG<TaskState>, TaskMutations
    *   APIとの通信に失敗した場合に発生する.
    */
   public async createTask(taskName: string): Promise<void> {
-    await this.$user.createTask(taskName);
+    const createdTask = await this.$user.createTask(taskName);
+
+    this.mutations.addTask(createdTask);
   }
 
   /**

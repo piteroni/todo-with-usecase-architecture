@@ -9,7 +9,7 @@ use App\UseCases\User\TaskListAcquisition\TaskListAcquisitionUseCase;
 use App\Http\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\TaskCreateRequest;
-use App\Http\Resources\User\CreatedTaskId;
+use App\Http\Resources\User\CreatedTask;
 use App\Http\Resources\User\TaskList;
 use App\Exceptions\AuthorizationException;
 use App\Exceptions\Api\ForbiddenException;
@@ -44,15 +44,13 @@ class UserController extends Controller
         $authorId = $request->user()->id;
         $taskName = $request->get('taskName');
 
-        $createdTaskId = null;
-
         try {
-            $createdTaskId = $taskCreateUseCase->createTask($authorId, $taskName);
+            $createdTask = $taskCreateUseCase->createTask($authorId, $taskName);
         } catch (Throwable $e)  {
             throw new InternalServerErrorException($operationId, '', $e);
         }
 
-        return response()->json(new CreatedTaskId($createdTaskId), HttpStatusCode::CREATED);
+        return response()->json(new CreatedTask($createdTask), HttpStatusCode::CREATED);
     }
 
     /**

@@ -79,13 +79,6 @@ export default class TaskCreateForm extends Vue {
     }
 
     this.reset();
-
-    try {
-      await this.$task.actions.fetchTasks();
-    } catch (e) {
-      console.error(e);
-      this.$notify.error("問題が発生しました");
-    }
   }
 
   /**
