@@ -1,6 +1,6 @@
 import Vuex, { Store } from "vuex";
+import { Module, createStore } from "vuex-smart-module";
 import { createLocalVue } from "@vue/test-utils";
-import { createStore } from "@/store/fixture";
 import {
   apiToken, ApiTokenState, ApiTokenContext
 } from "@/store/modules/apiToken";
@@ -19,7 +19,7 @@ describe("apiToken.ts", () => {
   let context: ApiTokenContext;
 
   beforeEach(() => {
-    store = createStore({ apiToken });
+    store = createStore(new Module({ modules: { apiToken } }));
     context = apiToken.context(store);
   });
 

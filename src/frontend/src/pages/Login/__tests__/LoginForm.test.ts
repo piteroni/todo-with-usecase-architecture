@@ -7,11 +7,11 @@ import { types } from "@/providers/types";
 import { container as vuexContextContainer } from "@/providers/containers/vuexContext";
 import { apiToken, ApiTokenContext, ApiTokenState } from "@/store/modules/apiToken";
 import LoginForm from "@/pages/Login/LoginForm.vue";
+import { createStore, Module } from "vuex-smart-module";
 import {
   waitUntilAuthenticated, fetchApiTokenMock, fetchApiTokenMockWithAuthFailure, ApiTokenActionsMock, ApiTokenActionsMockWithAuthFailure
 } from "./fixtures/loginForm";
 import { routes, waitUntilForMounted } from "./fixtures/shared";
-import { createStore, Module } from "vuex-smart-module";
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
@@ -32,7 +32,7 @@ describe("LoginForm.vue", () => {
 
   beforeEach(() => {
     vuetify = new Vuetify();
-    store = createStore(new Module({ modules: { apiToken: apiTokenMock }}));
+    store = createStore(new Module({ modules: { apiToken: apiTokenMock } }));
     context = apiTokenMock.context(store);
     router = new VueRouter({
       mode: "abstract",
@@ -74,7 +74,7 @@ describe("LoginForm.vue", () => {
     const apiTokenMockWithAuthFailure = apiToken.clone();
     apiTokenMockWithAuthFailure.options.actions = ApiTokenActionsMockWithAuthFailure;
 
-    store = createStore(new Module({ modules: { apiToken: apiTokenMockWithAuthFailure }}));
+    store = createStore(new Module({ modules: { apiToken: apiTokenMockWithAuthFailure } }));
     context = apiTokenMockWithAuthFailure.context(store);
 
     vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
@@ -121,7 +121,7 @@ describe("LoginForm.vue", () => {
     const apiTokenMockWithAuthFailure = apiToken.clone();
     apiTokenMockWithAuthFailure.options.actions = ApiTokenActionsMockWithAuthFailure;
 
-    store = createStore(new Module({ modules: { apiToken: apiTokenMockWithAuthFailure }}));
+    store = createStore(new Module({ modules: { apiToken: apiTokenMockWithAuthFailure } }));
     context = apiTokenMockWithAuthFailure.context(store);
 
     vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);

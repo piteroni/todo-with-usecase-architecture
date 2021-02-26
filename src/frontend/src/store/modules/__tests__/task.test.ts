@@ -1,6 +1,6 @@
 import Vuex, { Store } from "vuex";
 import { createLocalVue } from "@vue/test-utils";
-import { createStore } from "@/store/fixture";
+import { Module, createStore } from "vuex-smart-module";
 import {
   task, Task, TaskContext, TaskState
 } from "@/store/modules/task";
@@ -20,7 +20,7 @@ describe("task.ts", () => {
   let context: TaskContext;
 
   beforeEach(() => {
-    store = createStore({ task });
+    store = createStore(new Module({ modules: { task } }));
     context = task.context(store);
   });
 
@@ -35,12 +35,12 @@ describe("task.ts", () => {
     });
 
     it("タスクをstateに追加できる", () => {
-      const task = { id: 2, name: "n" };
+      const addingTask = { id: 2, name: "n" };
       const expected = [{ id: 1, name: "t" }, { id: 2, name: "n" }];
 
       // 事前状態を表現
       context.state.tasks = [{ id: 1, name: "t" }];
-      context.mutations.addTask(task);
+      context.mutations.addTask(addingTask);
 
       expect(context.state.tasks).toEqual(expected);
       expect(store.state.task.tasks).toEqual(expected);

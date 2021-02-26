@@ -1,15 +1,17 @@
 import Vue from "vue";
 import { Store } from "vuex";
+import { createStore, Module } from "vuex-smart-module";
 import Vuetify from "vuetify";
 import VueRouter from "vue-router";
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import { types } from "@/providers/types";
 import { container as vuexContextContainer } from "@/providers/containers/vuexContext";
-import { ApiTokenContext } from "@/store/modules/apiToken";
-import { createStore } from "@/store/fixture";
+import { apiToken, ApiTokenContext } from "@/store/modules/apiToken";
 import Login from "@/pages/Login/Login.vue";
 import { routes, waitUntilForMounted } from "./fixtures/shared";
-import { apiTokenStub, apiTokenStubWithAuthed, apiTokenStubWithException } from "./fixtures/login";
+import {
+  ApiTokenActionsMockWithAuthFailure, ApiTokenActionsMockWithException, ApiTokenActionsMockWithAuthed, verifyCrediantialsMock
+} from "./fixtures/login";
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
@@ -20,12 +22,18 @@ describe("Login.vue", () => {
   let vuetify = new Vuetify();
   let store: Store<unknown>;
   let context: ApiTokenContext;
+  let apiTokenMock: typeof apiToken;
   let router: VueRouter;
+
+  beforeAll(() => {
+    apiTokenMock = apiToken.clone();
+    apiTokenMock.options.actions = ApiTokenActionsMockWithAuthFailure;
+  });
 
   beforeEach(() => {
     vuetify = new Vuetify();
-    store = createStore({ apiToken: apiTokenStub });
-    context = apiTokenStub.context(store);
+    store = createStore(new Module({ modules: { apiToken: apiTokenMock } }));
+    context = apiTokenMock.context(store);
     router = new VueRouter({
       mode: "abstract",
       routes,
@@ -34,6 +42,10 @@ describe("Login.vue", () => {
     vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
 
     window.localStorage.clear();
+  });
+
+  afterEach(() => {
+    verifyCrediantialsMock.mockReset();
   });
 
   it("初期画面表示時にローディング画面が表示される", async () => {
@@ -58,6 +70,7 @@ describe("Login.vue", () => {
 
       await waitUntilForMounted();
 
+      expect(verifyCrediantialsMock).not.toBeCalled();
       expect(login.find("login-form-stub").exists()).toBeTruthy();
     });
 
@@ -72,11 +85,15 @@ describe("Login.vue", () => {
 
       await waitUntilForMounted();
 
+      expect(verifyCrediantialsMock).toBeCalled();
       expect(login.find("login-form-stub").exists()).toBeTruthy();
     });
 
     it("APIークンの検証処理中にUnauthorizedエラー以外が発生した場合に、エラーメッセージが通知される", async () => {
-      store = createStore({ apiTokenStubWithException });
+      const apiTokenStubWithException = apiToken.clone();
+      apiTokenStubWithException.options.actions = ApiTokenActionsMockWithException;
+
+      store = createStore(new Module({ modules: { apiToken: apiTokenStubWithException } }));
       context = apiTokenStubWithException.context(store);
 
       vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
@@ -105,6 +122,7 @@ describe("Login.vue", () => {
       stderrStub.mockReset();
       stderrStub.mockRestore();
 
+      expect(verifyCrediantialsMock).toBeCalled();
       expect(stderrStubCalls.length > 0).toBeTruthy();
       expect(stderrStubCalls[0][0]).not.toBe("");
       expect(error).toBeCalled();
@@ -112,7 +130,10 @@ describe("Login.vue", () => {
     });
 
     it("認証済みの場合に、ダッシュボード画面に推移する", async () => {
-      store = createStore({ apiTokenStubWithAuthed });
+      const apiTokenStubWithAuthed = apiToken.clone();
+      apiTokenStubWithAuthed.options.actions = ApiTokenActionsMockWithAuthed;
+
+      store = createStore(new Module({ modules: { apiToken: apiTokenStubWithAuthed } }));
       context = apiTokenStubWithAuthed.context(store);
 
       vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
@@ -125,6 +146,7 @@ describe("Login.vue", () => {
 
       await waitUntilForMounted();
 
+      expect(verifyCrediantialsMock).toBeCalled();
       expect("/dashboard").toBe(login.vm.$route.path);
     });
   });
