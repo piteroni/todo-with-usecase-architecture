@@ -8,12 +8,13 @@
       <v-layout>
         <v-text-field
           v-model="taskName"
+          class="taskInput"
           label="タスク"
           :rules="taskRules"
         ></v-text-field>
 
         <div class="my-auto">
-          <v-btn icon @click="createTask">
+          <v-btn class="taskCreateButton" icon @click="createTask">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </div>

@@ -1,52 +1,62 @@
-// import Vue from "vue";
-// import { Store } from "vuex";
-// import Vuetify from "vuetify";
-// import VueRouter from "vue-router";
-// import { createLocalVue, shallowMount } from "@vue/test-utils";
-// import { types } from "@/providers/types";
-// import { container as vuexContextContainer } from "@/providers/containers/vuexContext";
-// import { ApiTokenContext } from "@/store/modules/apiToken";
+import Vue from "vue";
+import { Store } from "vuex";
+import Vuetify from "vuetify";
+import VueRouter from "vue-router";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
+import { types } from "@/providers/types";
+import { container as vuexContextContainer } from "@/providers/containers/vuexContext";
+import { task, TaskContext } from "@/store/modules/task";
+import { createStore, Module } from "vuex-smart-module";
 // import { createStore } from "@/store/fixture";
-// import Login from "@/pages/Login/Login.vue";
+import TaskCreareForm from "@/pages/Dashboard/TaskCreareForm.vue";
+import { createTaskMock, TaskActionsMock } from "./fixtures/shared";
+import { waitUntilForMounted } from "@/shared/fixture";
 // import { routes, waitUntilForMounted } from "./fixtures/shared";
 // import { apiTokenStub, apiTokenStubWithAuthed, apiTokenStubWithException } from "./fixtures/login";
 
-// Vue.use(Vuetify);
-// Vue.use(VueRouter);
+Vue.use(Vuetify);
+Vue.use(VueRouter);
 
-// const localVue = createLocalVue();
+const localVue = createLocalVue();
 
-// describe("Login.vue", () => {
-//   let vuetify = new Vuetify();
-//   let store: Store<unknown>;
-//   let context: ApiTokenContext;
-//   let router: VueRouter;
+describe("TaskCreateForm.vue", () => {
+  let vuetify = new Vuetify();
+  let taskMock: typeof task;
 
-//   beforeEach(() => {
-//     vuetify = new Vuetify();
-//     store = createStore({ apiTokenStub });
-//     context = apiTokenStub.context(store);
-//     router = new VueRouter({
-//       mode: "abstract",
-//       routes,
-//     });
+  beforeAll(() => {
+    taskMock = task.clone();
+    taskMock.options.actions = TaskActionsMock;
+  });
 
-//     vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
+  beforeEach(() => {
+    vuetify = new Vuetify();
+    const store = createStore(new Module({ modules: { task: taskMock } }));
+    const context = taskMock.context(store);
 
-//     window.localStorage.clear();
-//   });
+    vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
+  });
 
-//   it("初期画面表示時にローディング画面が表示される", async () => {
-//     const login = shallowMount(Login, {
-//       localVue,
-//       vuetify,
-//       router,
-//     });
+  afterEach(() => {
+    createTaskMock.mockReset();
+  });
 
-//     // mountedが完了すると、テストは失敗する.
-//     expect(login.find("loading-stub").exists()).toBeTruthy();
-//     expect(login.find("login-form-stub").exists()).toBeFalsy();
-//   });
+  it("タスク情報を送信すると、タスク作成処理が呼ばれ、入力フォームの値が初期化される", async () => {
+    const taskCreareForm = shallowMount(TaskCreareForm, {
+      localVue,
+      vuetify,
+    });
+
+    await waitUntilForMounted();
+
+    await taskCreareForm.find(".taskInput input").setValue("new-task");
+    await taskCreareForm.find(".taskCreateButton").trigger("click");
+
+    console.log(taskCreareForm.find(".taskInput input").attributes());
+
+    // const inputValue = taskCreareForm.find(".taskInput input").attributes
+
+    expect(createTaskMock).toBeCalledWith();
+  });
 
 //   it("ローカルストレージにトークンが保存されていない場合に、ログインフォームが表示される", async () => {
 //     const login = shallowMount(Login, {
@@ -124,4 +134,4 @@
 
 //     expect("/dashboard").toBe(login.vm.$route.path);
 //   });
-// });
+});
