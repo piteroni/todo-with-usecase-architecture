@@ -48,7 +48,7 @@ describe("apiToken.ts", () => {
 
   describe("actions", () => {
     beforeAll(() => {
-      container.rebind<Identification>(types.api.Identification).toConstantValue(new IdentificationMock());
+      container.rebind<Identification>(types.api.Identification).to(IdentificationMock);
       window.localStorage.clear();
     });
 

@@ -1,6 +1,6 @@
 import Vuex, { Store } from "vuex";
-import { createStore, Module } from "vuex-smart-module";
 import { createLocalVue } from "@vue/test-utils";
+import { createStore } from "@/store/fixture";
 import { csrfToken, CsrfTokenState, CsrfTokenContext } from "@/store/modules/csrfToken";
 
 const localVue = createLocalVue();
@@ -12,7 +12,7 @@ describe("csrfToken.ts", () => {
   let context: CsrfTokenContext;
 
   beforeEach(() => {
-    store = createStore(new Module({ modules: { csrfToken } }));
+    store = createStore({ csrfToken });
     context = csrfToken.context(store);
   });
 

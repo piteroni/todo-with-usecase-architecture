@@ -49,7 +49,7 @@ describe("task.ts", () => {
 
   describe("actions", () => {
     beforeAll(() => {
-      container.rebind<User>(types.api.User).toConstantValue(new UserMock());
+      container.rebind<User>(types.api.User).to(UserMock);
     });
 
     afterEach(() => {

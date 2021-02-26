@@ -1,30 +1,24 @@
 import flushPromises from "flush-promises";
-import { apiToken, ApiTokenActions } from "@/store/modules/apiToken";
+import { ApiTokenActions } from "@/store/modules/apiToken";
 import { UnauthorizedError } from "@/api/exceptions";
-
-// 通常のスタブ
-export const apiTokenStub = apiToken.clone();
 
 export const fetchApiTokenMock = jest.fn();
 
-apiTokenStub.options.actions = class extends ApiTokenActions {
+export class ApiTokenActionsMock extends ApiTokenActions {
   public async fetchApiToken() {
     fetchApiTokenMock();
   }
-};
+}
 
-// 認証失敗を表現するスタブ
-export const apiTokenStubWithAuthFailure = apiToken.clone();
+export const fetchApiTokenMockWithAuthFailure = jest.fn();
 
-export const fetchApiTokenMockWithAuthFailure = jest.fn(() => {
-  throw new UnauthorizedError("message", 1, "code");
-});
-
-apiTokenStubWithAuthFailure.options.actions = class extends ApiTokenActions {
+export class ApiTokenActionsMockWithAuthFailure extends ApiTokenActions {
   public async fetchApiToken() {
     fetchApiTokenMockWithAuthFailure();
+
+    throw new UnauthorizedError("message", 1, "code");
   }
-};
+}
 
 /**
  * 認証処理が完了するまで待つ.

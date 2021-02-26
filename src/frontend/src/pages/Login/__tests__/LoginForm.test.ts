@@ -5,13 +5,13 @@ import VueRouter from "vue-router";
 import { mount, createLocalVue, shallowMount } from "@vue/test-utils";
 import { types } from "@/providers/types";
 import { container as vuexContextContainer } from "@/providers/containers/vuexContext";
-import { ApiTokenContext, ApiTokenState } from "@/store/modules/apiToken";
-import { createStore } from "@/store/fixture";
+import { apiToken, ApiTokenContext, ApiTokenState } from "@/store/modules/apiToken";
 import LoginForm from "@/pages/Login/LoginForm.vue";
 import {
-  apiTokenStub, apiTokenStubWithAuthFailure, waitUntilAuthenticated, fetchApiTokenMock, fetchApiTokenMockWithAuthFailure
+  waitUntilAuthenticated, fetchApiTokenMock, fetchApiTokenMockWithAuthFailure, ApiTokenActionsMock, ApiTokenActionsMockWithAuthFailure
 } from "./fixtures/loginForm";
 import { routes, waitUntilForMounted } from "./fixtures/shared";
+import { createStore, Module } from "vuex-smart-module";
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
@@ -22,12 +22,18 @@ describe("LoginForm.vue", () => {
   let vuetify = new Vuetify();
   let store: Store<{ apiToken: ApiTokenState }>;
   let context: ApiTokenContext;
+  let apiTokenMock: typeof apiToken;
   let router: VueRouter;
+
+  beforeAll(() => {
+    apiTokenMock = apiToken.clone();
+    apiTokenMock.options.actions = ApiTokenActionsMock;
+  });
 
   beforeEach(() => {
     vuetify = new Vuetify();
-    store = createStore({ apiTokenStub });
-    context = apiTokenStub.context(store);
+    store = createStore(new Module({ modules: { apiToken: apiTokenMock }}));
+    context = apiTokenMock.context(store);
     router = new VueRouter({
       mode: "abstract",
       routes,
@@ -65,8 +71,11 @@ describe("LoginForm.vue", () => {
   });
 
   it("認証に失敗すると、認証に失敗した旨が表示されログイン処理が中断される", async () => {
-    store = createStore({ apiTokenStubWithAuthFailure });
-    context = apiTokenStubWithAuthFailure.context(store);
+    const apiTokenMockWithAuthFailure = apiToken.clone();
+    apiTokenMockWithAuthFailure.options.actions = ApiTokenActionsMockWithAuthFailure;
+
+    store = createStore(new Module({ modules: { apiToken: apiTokenMockWithAuthFailure }}));
+    context = apiTokenMockWithAuthFailure.context(store);
 
     vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
 
@@ -109,8 +118,11 @@ describe("LoginForm.vue", () => {
     router.push("/login?isRedirect=true");
 
     // 画面が遷移しないようにあえて認証失敗させる
-    store = createStore({ apiTokenStubWithAuthFailure });
-    context = apiTokenStubWithAuthFailure.context(store);
+    const apiTokenMockWithAuthFailure = apiToken.clone();
+    apiTokenMockWithAuthFailure.options.actions = ApiTokenActionsMockWithAuthFailure;
+
+    store = createStore(new Module({ modules: { apiToken: apiTokenMockWithAuthFailure }}));
+    context = apiTokenMockWithAuthFailure.context(store);
 
     vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
 
