@@ -11,7 +11,8 @@ import { createStore, Module } from "vuex-smart-module";
 import {
   waitUntilAuthenticated, fetchApiTokenMock, fetchApiTokenMockWithAuthFailure, ApiTokenActionsMock, ApiTokenActionsMockWithAuthFailure
 } from "./fixtures/loginForm";
-import { routes, waitUntilForMounted } from "./fixtures/shared";
+import { routes } from "./fixtures/shared";
+import { waitUntilForMounted, waitUntilForDone } from "@/shared/fixture";
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
@@ -178,6 +179,8 @@ describe("LoginForm.vue", () => {
     await loginForm.find(".email input").setValue("");
     await loginForm.find(".password input").setValue("");
     await loginForm.find(".loginButton").trigger("click");
+
+    await waitUntilForDone();
 
     // 認証情報の保存処理が呼ばれないこと
     expect(fetchApiTokenMock).not.toBeCalled();
