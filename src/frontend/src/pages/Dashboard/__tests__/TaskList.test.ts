@@ -4,20 +4,21 @@ import VueRouter from "vue-router";
 import { createLocalVue, mount } from "@vue/test-utils";
 import { types } from "@/providers/types";
 import { container as vuexContextContainer } from "@/providers/containers/vuexContext";
-import { task } from "@/store/modules/task";
+import { task, TaskContext } from "@/store/modules/task";
 import { createStore, Module } from "vuex-smart-module";
-import TaskCreateForm from "@/pages/Dashboard/TaskCreateForm.vue";
+import TaskList from "@/pages/Dashboard/TaskList.vue";
 import { waitUntilForDone, waitUntilForMounted } from "@/shared/fixture";
-import { createTaskMock, TaskActionsMock } from "./fixtures/shared";
-import { createTaskMockWithException, TaskActionsMockWithException } from "./fixtures/taskCreateForm";
+import { deleteTaskMock, TaskActionsMock } from "./fixtures/shared";
+import { deleteTaskMockMockWithException, TaskActionsMockWithException } from "./fixtures/taskList";
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
 
 const localVue = createLocalVue();
 
-describe("TaskCreateForm.vue", () => {
+describe("TaskList.vue", () => {
   let vuetify = new Vuetify();
+  let context: TaskContext;
   let taskMock: typeof task;
 
   beforeAll(() => {
@@ -28,47 +29,45 @@ describe("TaskCreateForm.vue", () => {
   beforeEach(() => {
     vuetify = new Vuetify();
     const store = createStore(new Module({ modules: { task: taskMock } }));
-    const context = taskMock.context(store);
+    context = taskMock.context(store);
 
     vuexContextContainer.rebind(types.vuexContexts.task).toConstantValue(context);
   });
 
   afterEach(() => {
-    createTaskMock.mockReset();
+    deleteTaskMock.mockReset();
   });
 
-  it("タスク情報を送信すると、タスク作成処理が呼ばれ、入力フォームの値が初期化される", async () => {
-    const taskCreateForm = mount(TaskCreateForm, {
+  it("Vuexに保存したタスクのタスク名がリストで表示される", async () => {
+    context.mutations.save([{ id: 2, name: "task-0" }, { id: 3, name: "task-1" }]);
+
+    const taskList = mount(TaskList, {
       localVue,
       vuetify,
     });
 
     await waitUntilForMounted();
 
-    await taskCreateForm.find(".taskInput input").setValue("new-task");
-    await taskCreateForm.find(".taskCreateButton").trigger("click");
+    const actual = taskList.findAll(".taskList .task");
 
-    await waitUntilForDone();
-
-    expect(createTaskMock).toBeCalledWith("new-task");
-    expect((taskCreateForm.find(".taskInput input").element as HTMLInputElement).value).toBe("");
+    expect(actual.length).toBe(2);
+    expect(actual.wrappers[0].text()).toBe("task-0");
+    expect(actual.wrappers[1].text()).toBe("task-1");
   });
 
-  it("入力内容に不備がある場合、エラーメッセージが表示され、タスク作成処理は実施されない", async () => {
-    const taskCreateForm = mount(TaskCreateForm, {
+  it("タスク削除ボタンを押下すると、当該のタスクの削除処理が呼ばれる", async () => {
+    context.mutations.save([{ id: 2, name: "task-0" }]);
+
+    const taskList = mount(TaskList, {
       localVue,
       vuetify,
     });
 
     await waitUntilForMounted();
 
-    await taskCreateForm.find(".taskInput input").setValue("");
-    await taskCreateForm.find(".taskCreateButton").trigger("click");
+    await taskList.find(".taskList .task .deleteButton").trigger("click");
 
-    await waitUntilForDone();
-
-    expect(taskCreateForm.find(".taskInput .v-messages__message").text()).not.toBe("");
-    expect(createTaskMock).not.toBeCalled();
+    expect(deleteTaskMock).toBeCalledWith(2);
   });
 
   describe("API例外ハンドリング", () => {
@@ -81,7 +80,7 @@ describe("TaskCreateForm.vue", () => {
       taskMockWithExcetion.options.actions = TaskActionsMockWithException;
 
       const store = createStore(new Module({ modules: { task: taskMockWithExcetion } }));
-      const context = taskMockWithExcetion.context(store);
+      context = taskMockWithExcetion.context(store);
 
       vuexContextContainer.rebind(types.vuexContexts.task).toConstantValue(context);
 
@@ -96,13 +95,15 @@ describe("TaskCreateForm.vue", () => {
 
     afterEach(() => {
       errorNotifyMock.mockReset();
-      createTaskMockWithException.mockReset();
+      deleteTaskMockMockWithException.mockReset();
       stderrMock.mockReset();
       stderrMock.mockRestore();
     });
 
-    it("タスク作成処理中に例外が発生した場合、エラーメッセージが表示される", async () => {
-      const taskCreateForm = mount(TaskCreateForm, {
+    it("タスクの削除処理中に例外が発生した場合、エラーメッセージが表示される", async () => {
+      context.mutations.save([{ id: 2, name: "task-0" }]);
+
+      const taskList = mount(TaskList, {
         localVue,
         vuetify,
         mocks: { $notify }
@@ -110,12 +111,11 @@ describe("TaskCreateForm.vue", () => {
 
       await waitUntilForMounted();
 
-      await taskCreateForm.find(".taskInput input").setValue("new-task");
-      await taskCreateForm.find(".taskCreateButton").trigger("click");
+      await taskList.find(".taskList .task .deleteButton").trigger("click");
 
       await waitUntilForDone();
 
-      expect(createTaskMock).not.toBeCalled();
+      expect(deleteTaskMockMockWithException).toBeCalledWith(2);
       expect(stderrMock).toBeCalled();
       expect(stderrMock.mock.calls[0][0]).not.toBe("");
       expect(errorNotifyMock).toBeCalled();

@@ -21,7 +21,7 @@ export class ApiTokenGetters extends Getters<ApiTokenState> {
    *
    * @returns API Tokenが保存されているか.
    */
-  get isApiTokenStored(): boolean {
+  public get isApiTokenStored(): boolean {
     return this.state.token !== "";
   }
 }

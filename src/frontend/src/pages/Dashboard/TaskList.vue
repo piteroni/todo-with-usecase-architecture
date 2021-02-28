@@ -4,15 +4,15 @@
       タスク一覧
     </v-subheader>
 
-    <ul>
-      <li v-for="(task, index) in tasks" :key="index">
+    <ul class="taskList">
+      <li class="task" v-for="(task, index) in tasks" :key="index">
         <v-layout>
           <v-col cols="4" class="pa-0">
-            <div>{{ task.name }}</div>
+            <div class="taskName">{{ task.name }}</div>
           </v-col>
 
           <div class="my-auto">
-            <v-btn icon @click="() => deleteTask(task.id)">
+            <v-btn class="deleteButton" icon @click="() => deleteTask(task.id)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </div>

@@ -89,7 +89,7 @@ describe("Login.vue", () => {
       expect(login.find("login-form-stub").exists()).toBeTruthy();
     });
 
-    it("APIークンの検証処理中にUnauthorizedエラー以外が発生した場合に、エラーメッセージが通知される", async () => {
+    it("APIトークンの検証処理中にUnauthorizedエラー以外が発生した場合に、エラーメッセージが通知される", async () => {
       const apiTokenStubWithException = apiToken.clone();
       apiTokenStubWithException.options.actions = ApiTokenActionsMockWithException;
 
@@ -98,11 +98,11 @@ describe("Login.vue", () => {
 
       vuexContextContainer.rebind(types.vuexContexts.apiToken).toConstantValue(context);
 
-      const stderrStub = jest.spyOn(console, "error");
+      const stderrMock = jest.spyOn(console, "error");
 
-      stderrStub.mockImplementation(input => input);
+      stderrMock.mockImplementation(input => input);
 
-      const error = jest.fn();
+      const errorNotifyMock = jest.fn();
 
       shallowMount(Login, {
         localVue,
@@ -110,23 +110,23 @@ describe("Login.vue", () => {
         router,
         mocks: {
           $notify: {
-            error
+            error: errorNotifyMock
           }
         }
       });
 
       await waitUntilForMounted();
 
-      const stderrStubCalls = stderrStub.mock.calls;
+      const stderrStubCalls = stderrMock.mock.calls;
 
-      stderrStub.mockReset();
-      stderrStub.mockRestore();
+      stderrMock.mockReset();
+      stderrMock.mockRestore();
 
       expect(verifyCrediantialsMock).toBeCalled();
       expect(stderrStubCalls.length > 0).toBeTruthy();
       expect(stderrStubCalls[0][0]).not.toBe("");
-      expect(error).toBeCalled();
-      expect(error.mock.calls[0][0]).not.toBe("");
+      expect(errorNotifyMock).toBeCalled();
+      expect(errorNotifyMock.mock.calls[0][0]).not.toBe("");
     });
 
     it("認証済みの場合に、ダッシュボード画面に推移する", async () => {

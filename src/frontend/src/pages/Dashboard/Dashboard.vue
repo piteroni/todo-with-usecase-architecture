@@ -2,7 +2,7 @@
   <v-container class="grey lighten-5 pa-0" fluid fill-height align-start>
     <loading :loading="loading" v-if="loading" />
 
-    <v-layout v-else justify-center align-center>
+    <v-layout class="dashboard" v-else justify-center align-center>
       <v-flex fill-height>
         <navbar>
           <logo></logo>
