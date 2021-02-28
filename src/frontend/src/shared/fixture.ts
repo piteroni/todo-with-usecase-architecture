@@ -5,11 +5,11 @@ import flushPromises from "flush-promises";
  */
 export const waitUntilForMounted = async (): Promise<void> => {
   await flushPromises();
-}
+};
 
 /**
  * 処理が完了するまで待つ.
  */
 export const waitUntilForDone = async (): Promise<void> => {
   await flushPromises();
-}
+};

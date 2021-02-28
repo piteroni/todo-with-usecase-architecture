@@ -10,7 +10,9 @@ import { createStore, Module } from "vuex-smart-module";
 import Dashboard from "@/pages/Dashboard/Dashboard.vue";
 import { waitUntilForMounted } from "@/shared/fixture";
 import { fetchTasksMock, TaskActionsMock } from "./fixtures/shared";
-import { verifyCrediantialsMock, ApiTokenActionsMockWithAuthed, ApiTokenGettersMockWithAuthed, ApiTokenGettersMockWithUnauthed, ApiTokenActionsMockWithAuthFailure, ApiTokenActionsMockWithException, TaskActionsMockWithException, fetchTasksMockWithException } from "./fixtures/dashboard";
+import {
+  verifyCrediantialsMock, ApiTokenActionsMockWithAuthed, ApiTokenGettersMockWithAuthed, ApiTokenGettersMockWithUnauthed, ApiTokenActionsMockWithAuthFailure, ApiTokenActionsMockWithException, TaskActionsMockWithException, fetchTasksMockWithException
+} from "./fixtures/dashboard";
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);

@@ -8,11 +8,11 @@ import { container as vuexContextContainer } from "@/providers/containers/vuexCo
 import { apiToken, ApiTokenContext, ApiTokenState } from "@/store/modules/apiToken";
 import LoginForm from "@/pages/Login/LoginForm.vue";
 import { createStore, Module } from "vuex-smart-module";
+import { waitUntilForMounted, waitUntilForDone } from "@/shared/fixture";
 import {
   waitUntilAuthenticated, fetchApiTokenMock, fetchApiTokenMockWithAuthFailure, ApiTokenActionsMock, ApiTokenActionsMockWithAuthFailure
 } from "./fixtures/loginForm";
 import { routes } from "./fixtures/shared";
-import { waitUntilForMounted, waitUntilForDone } from "@/shared/fixture";
 
 Vue.use(Vuetify);
 Vue.use(VueRouter);
