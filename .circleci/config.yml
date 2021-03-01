@@ -21,10 +21,10 @@ jobs:
           path: ~/repo
 
       - run:
-          name: setup
+          name: install dependencies
           command: |
             sudo apt-get update && sudo apt-get -y install git libicu-dev libonig-dev libzip-dev unzip locales &&
-            pecl install pcov && sudo docker-php-ext-install intl pdo_mysql zip bcmath && docker-php-ext-enable pcov
+            sudo pecl install pcov && sudo docker-php-ext-install intl pdo_mysql zip bcmath && sudo docker-php-ext-enable pcov
 
       - restore_cache:
           keys:
@@ -50,7 +50,7 @@ jobs:
 
       - run:
           name: run test
-          command: vendor/bin/phpunit -c phpunit.xml
+          command: vendor/bin/phpunit -c phpunit.xml --coverage-text
 
   frontend_test:
     docker:
