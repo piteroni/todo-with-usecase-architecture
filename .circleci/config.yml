@@ -72,7 +72,13 @@ workflows:
   version: 2
   backend:
     jobs:
-      - backend_test
+      - backend_test:
+          filters:
+            branches:
+              ignore: main
   frontend:
     jobs:
-      - frontend_test
+      - frontend_test:
+          filters:
+            branches:
+              ignore: main
