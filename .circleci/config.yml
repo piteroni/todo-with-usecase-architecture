@@ -1,0 +1,78 @@
+version: 2
+jobs:
+  backend_test:
+    docker:
+      - image: circleci/php:7.4.9-fpm-buster
+        environment:
+          APP_DEBUG: true
+          APP_ENV: testing
+          DB_DATABASE: circle_test
+          DB_USERNAME: root
+
+      - image: circleci/mysql:8.0
+        command: mysqld --default-authentication-plugin=mysql_native_password
+
+    working_directory: ~/repo/src/backend
+
+    steps:
+      - checkout:
+          path: ~/repo
+
+      - run:
+          name: install dependencies
+          command: |
+            sudo apt-get update && sudo apt-get -y install git libicu-dev libonig-dev libzip-dev unzip locales &&
+            sudo pecl install pcov && sudo docker-php-ext-install intl pdo_mysql zip bcmath && sudo docker-php-ext-enable pcov
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "composer.json" }}
+          - v1-dependencies-
+
+      - run:
+          name: composer install
+          command: composer install -n --prefer-dist
+
+      - save_cache:
+          paths:
+            - ./vendor
+          key: v1-dependencies-{{ checksum "composer.json" }}
+
+      - run:
+          name: database migration
+          command: php artisan migrate
+
+      - run:
+          name: static analysis
+          command: vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=512M
+
+      - run:
+          name: run test
+          command: vendor/bin/phpunit -c phpunit.xml --coverage-text
+
+  frontend_test:
+    docker:
+      - image: circleci/node:14
+
+    working_directory: ~/repo/src/frontend
+
+    steps:
+      - checkout:
+          path: ~/repo
+
+      - run:
+          name: install dependencies
+          command: yarn install
+
+      - run:
+          name: unit test
+          command: npm run test
+
+workflows:
+  version: 2
+  backend:
+    jobs:
+      - backend_test
+  frontend:
+    jobs:
+      - frontend_test

@@ -3,11 +3,12 @@
 namespace Tests;
 
 use Codeception\Specify;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, Specify;
+    use CreatesApplication, Specify, DatabaseTransactions;
 
     /**
      * APIの基底URLを取得する.

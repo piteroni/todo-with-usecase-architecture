@@ -5,6 +5,8 @@ const baseURL = ((env: string): string => {
   switch (env) {
     case "development":
       return "http://localhost:9000/api/v0";
+    case "test":
+      return "http://localhost:9000/api/v0";
     default:
       throw new Error(`unexpected environment type: ${env}`);
   }
