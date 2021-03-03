@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Login from "@/pages/Login/Login.vue";
 import Dashboard from "@/pages/Dashboard/Dashboard.vue";
+import Profile from "@/pages/Profile/Profile.vue";
 import NotFound from "@/pages/Error/NotFound.vue";
 import { routeNames } from "./routeNames";
 
@@ -17,6 +18,11 @@ const routes: Array<RouteConfig> = [
     path: "/dashboard",
     name: routeNames.dashboard,
     component: Dashboard,
+  },
+  {
+    path: "/profile",
+    name: routeNames.profile,
+    component: Profile
   },
   {
     path: "*",

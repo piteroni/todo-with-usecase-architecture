@@ -57,7 +57,7 @@
     "prefer-stable": true,
     "scripts": {
         "test": [
-            "vendor/bin/phpunit -c phpunit.xml"
+            "vendor/bin/phpunit -c phpunit.xml --coverage-text"
         ],
         "analyse": [
             "vendor/bin/phpstan analyse -c phpstan.neon"

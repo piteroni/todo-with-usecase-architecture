@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\UseCases\User\ProfileAcquisition\ProfileAcquisitionUseCase;
 use App\UseCases\User\TaskCreate\TaskCreateUseCase;
 use App\UseCases\User\TaskDelete\TaskDeleteAuthorize;
 use App\UseCases\User\TaskDelete\TaskDeleteUseCase;
@@ -23,6 +24,33 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
+    }
+
+    /**
+     * ログインユーザーのユーザー情報を取得する.
+     *
+     * @param \Illuminate\Http\Request $request
+     *   リクエストオブジェクト.
+     * @return \Illuminate\Http\JsonResponse
+     *   ログインユーザーのユーザー情報.
+     * @throws \App\Exceptions\Api\InternalServerErrorException
+     *   サーバーで何らかの問題が発生した場合に送出される.
+     */
+    public function getProfile(Request $request): JsonResponse
+    {
+        $profileAcquisitionUseCase = new ProfileAcquisitionUseCase();
+
+        $operationId = $request->route()->getName();
+
+        $profile = null;
+
+        try {
+            $profile = $profileAcquisitionUseCase->getProfile();
+        } catch (Throwable $e) {
+            throw new InternalServerErrorException($operationId, '', $e);
+        }
+
+        return response()->json($profile, HttpStatusCode::OK);
     }
 
     /**

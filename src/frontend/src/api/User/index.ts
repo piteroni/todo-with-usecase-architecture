@@ -2,12 +2,26 @@ import { AxiosResponse } from "axios";
 import { injectable } from "inversify";
 import { throwApiError } from "@/api/handlers";
 import { api } from "@/api/base";
-import { GetTasksResponse, TaskCreateResponse } from "./types";
+import { GetTasksResponse, ProfileGetResponse, TaskCreateResponse } from "./types";
 
 export const resource = "/users";
 
 @injectable()
 export class User {
+  /**
+   * ログインユーザーのユーザー情報を取得する.
+   *
+   * @returns
+   *   ユーザー情報.
+   * @throws {APIError}
+   *   APIとの通信に失敗した場合に発生する.
+   */
+  public async getProfile(): Promise<ProfileGetResponse> {
+    const response = await api.get(`${resource}/current`).catch(throwApiError);
+
+    return (response as AxiosResponse<ProfileGetResponse>).data;
+  }
+
   /**
    * タスクの作成を行う.
    *
