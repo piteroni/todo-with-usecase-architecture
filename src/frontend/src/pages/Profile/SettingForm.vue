@@ -1,6 +1,6 @@
 <template>
   <div>
-    <password-update-dialog :is-open.sync="isOpenPasswordUpdateDialog" :new-password.sync="inputValues.newPassword" />
+    <password-update-dialog :is-open.sync="isOpenPasswordUpdateDialog" :password-origin.sync="inputValues.password" />
 
     <v-form ref="form" lazy-validation class="mb-6">
       <v-col cols="4" class="pa-0">
@@ -16,8 +16,6 @@
           <div class="col-md-8 pb-0">
             <v-text-field
               class="username"
-              type="text"
-              name="username"
               v-model="inputValues.username"
               :rules="usernameRules"
               outlined
@@ -35,7 +33,6 @@
             <v-text-field
               class="email"
               type="email"
-              name="email"
               v-model="inputValues.email"
               :rules="emailRules"
               outlined
@@ -45,15 +42,14 @@
         </v-row>
 
         <v-row>
-          <label for="password" class="col-md-3 label">
+          <label for="hidden-password" class="col-md-3 label">
             パスワード
           </label>
 
           <div class="col-md-8 pb-0">
             <v-text-field
-              class="password"
+              class="hidden-password hiddenPassword"
               type="password"
-              name="password"
               v-model="password"
               @click="updatePassword"
               readonly
@@ -65,10 +61,12 @@
 
         <v-layout class="mt-4" justify-center>
           <v-btn
-            class="updateButton px-6"
+            class="updateButton px-5"
             depressed
             @click="updateProfile"
             color="primary"
+            :ripple="false"
+            :loading="isUpdating"
           >
             更新
           </v-btn>
@@ -95,14 +93,22 @@ import PasswordUpdateDialog from "./PasswordUpdateDialog.vue";
   }
 })
 export default class Settings extends Vue {
+  @Api(types.api.User)
+  private readonly $user!: User;
+
   @Ref()
   public readonly form!: VForm;
 
+  /**
+   * サーバーから取得したログインユーザーのユーザー情報.
+   */
   @Prop({ required: true, type: Object })
   public readonly profile!: Profile;
 
-  @Api(types.api.User)
-  private readonly $user!: User;
+  /**
+   * ユーザー情報を更新中か否かを表す.
+   */
+  public isUpdating = false;
 
   /**
    * パスワード更新ダイアログを表示するかを保持する.
@@ -110,22 +116,18 @@ export default class Settings extends Vue {
   public isOpenPasswordUpdateDialog = false;
 
   /**
-   * 入力データを保持する.
+   * 入力データを表す.
    */
   public inputValues = {
     username: "",
     email: "",
-    newPassword: "",
+    password: "",
   };
 
   /**
-   * ダミー用のパスワードを表す.
+   * 表示用のパスワードを表す.
    */
-  public password = "";
-
-  public get initialPasswordValue(): string {
-    return "dummyPassword";
-  }
+  public passwordStub = "";
 
   /**
    * ユーザー名欄のバリデーションルールを取得する.
@@ -137,7 +139,7 @@ export default class Settings extends Vue {
   }
 
   /**
-   * ユーザー名欄のバリデーションルールを取得する.
+   * メールアドレス欄のバリデーションルールを取得する.
    */
   public get emailRules(): Array<Function> {
     return [
@@ -148,14 +150,17 @@ export default class Settings extends Vue {
   public async created() {
     this.inputValues.username = this.profile.name;
     this.inputValues.email = this.profile.email;
-    this.password = "dummyPassword";
+    this.passwordStub = "dummyPassword";
 
-    this.watchNewPassword();
+    this.watchPasswordInputValue();
   }
 
-  public async watchNewPassword() {
-    this.$watch(() => this.inputValues.newPassword, (newPassword: string) => {
-      this.password = newPassword;
+  /**
+   * 入力用のパスワードの更新を監視する.
+   */
+  public async watchPasswordInputValue() {
+    this.$watch(() => this.inputValues.password, (newPassword: string) => {
+      this.passwordStub = newPassword;
     });
   }
 
@@ -163,7 +168,13 @@ export default class Settings extends Vue {
    * 更新ボタンのクリックイベントをハンドリングする.
    */
   public async updateProfile(): Promise<void> {
+    if (!this.form.validate()) {
+      return;
+    }
+
     const params: Record<string, string> = {};
+
+    this.isUpdating = true;
 
     if (this.inputValues.username !== this.profile.name) {
       params.name = this.inputValues.username;
@@ -173,12 +184,26 @@ export default class Settings extends Vue {
       params.email = this.inputValues.email;
     }
 
-    if (this.inputValues.newPassword !== "") {
-      params.password = this.inputValues.newPassword;
+    if (this.inputValues.password !== "") {
+      params.password = this.inputValues.password;
     }
 
-    this.$user.updateProfile(params);
-    // propsをupdateする
+    let updatedProfile!: Profile;
+
+    try {
+      updatedProfile = await this.$user.updateProfile(params);
+    } catch (e) {
+      console.error(e);
+      this.$notify.error("問題が発生しました");
+
+      return;
+    }
+
+    this.$emit("update:profile", updatedProfile);
+
+    this.isUpdating = false;
+
+    this.$notify.success("プロフィールを更新しました！");
   }
 
   /**

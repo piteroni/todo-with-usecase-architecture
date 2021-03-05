@@ -12,7 +12,7 @@
         </navbar>
 
         <v-container fluid class="mx-12">
-          <setting-form :profile="profile" />
+          <setting-form :profile.sync="profile" />
         </v-container>
       </v-flex>
     </v-layout>
@@ -24,11 +24,11 @@ import { Component, Mixins } from "vue-property-decorator";
 import { types } from "@/providers/types";
 import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
+import { RedirectIfUnauthenticated } from "@/mixins/RedirectIfUnauthenticated";
 import Logo from "@/components/singletons/Logo.vue";
 import Navbar from "@/components/singletons/Navber.vue";
 import MoreMenu from "@/components/singletons/MoreMenu.vue";
 import Loading from "@/components/singletons/Loading.vue";
-import { RedirectIfUnauthenticated } from "@/mixins/RedirectIfUnauthenticated";
 import SettingForm from "./SettingForm.vue";
 import { Profile as ProfileType } from "./types";
 

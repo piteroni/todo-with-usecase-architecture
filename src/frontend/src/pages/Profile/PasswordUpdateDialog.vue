@@ -13,15 +13,14 @@
         <v-row justify="center" align-content="center">
           <v-form class="form">
             <div>
-              <label for="new-password" class="col-md-3 label">
+              <label for="password" class="col-md-3 label">
                 新しいパスワード
               </label>
 
               <div class="col-md-12 pb-0">
                 <v-text-field
-                  v-model="newPasswordInputValue"
-                  class="new-password"
-                  name="new-password"
+                  v-model="passwordInputValue"
+                  class="password"
                   outlined
                   dense
                 />
@@ -36,12 +35,12 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <div class="my-2 mr-2">
-          <v-btn class="mr-4" @click="close" :ripple="false">
+          <v-btn class="mr-4" @click="cancel" :ripple="false">
             キャンセル
           </v-btn>
 
           <v-btn color="primary" @click="save" :ripple="false">
-            保存
+            変更を保存
           </v-btn>
         </div>
       </v-card-actions>
@@ -54,44 +53,38 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class PasswordUpdateDialog extends Vue {
+  /**
+   * コンポーネントを表示する否かを表す.
+   */
   @Prop({ required: true, type: Boolean })
   public readonly isOpen!: boolean;
 
+  /**
+   * 親コンポーネントにて管理されているパスワード.
+   */
   @Prop({ required: true, type: String })
-  public readonly newPassword!: string;
+  public readonly passwordOrigin!: string;
 
   /**
    * 入力された新しいパスワード.
    */
-  public newPasswordInputValue = "";
-
-  public created() {
-    this.watchIsOpen();
-  }
-
-  // @todo: sync if updatedPropsみたいな名前もいいかもな
-  public watchIsOpen() {
-    this.$watch(() => this.isOpen, (isOpen: boolean) => {
-      if (isOpen) {
-        this.newPasswordInputValue = this.newPassword;
-      }
-    });
-  }
+  public passwordInputValue = "";
 
   /**
    * 保存ボタンのクリックイベントをハンドリングする.
    */
   public save() {
-    this.$emit("update:new-password", this.newPasswordInputValue);
+    this.$emit("update:password-origin", this.passwordInputValue);
     this.$emit("update:is-open", false);
   }
 
   /**
-   * モーダルを閉じる.
+   * キャンセルボタンのクリックイベントをハンドリングする.
    */
-  public close() {
+  public cancel() {
     // @see .sync - vue 2.3
     this.$emit("update:is-open", false);
+    this.passwordInputValue = this.passwordOrigin;
   }
 }
 </script>

@@ -12,3 +12,8 @@ export interface ProfileGetResponse {
   name: string;
   email: string;
 }
+
+export interface ProfileUpdateResponse {
+  name: string;
+  email: string;
+}
