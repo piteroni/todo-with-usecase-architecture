@@ -23,12 +23,12 @@ class ProfileUpdateUseCaseTest extends TestCase
     public function testProfileUpdate(): void
     {
         $params = [
-            'name' => 'test-user',
+            'username' => 'test-user',
             'email' => 'test@example.com'
         ];
 
         $expected = [
-            'name' => 'test-user',
+            'username' => 'test-user',
             'email' => 'test@example.com'
         ];
 
@@ -48,7 +48,7 @@ class ProfileUpdateUseCaseTest extends TestCase
     public function testUsernameUpdate(): void
     {
         $params = [
-            'name' => 'test-username-update',
+            'username' => 'test-username-update',
         ];
 
         $user = User::factory()->create();
@@ -110,7 +110,7 @@ class ProfileUpdateUseCaseTest extends TestCase
     public function testUnSpecifiedEmail(): void
     {
         $params = [
-            'name' => 'username',
+            'username' => 'username',
         ];
 
         $user = User::factory()->create([
@@ -184,7 +184,7 @@ class ProfileUpdateUseCaseTest extends TestCase
         $beforeUpdatedAt = $user->updated_at;
 
         $expected = [
-            'name' => 'test-username',
+            'username' => 'test-username',
             'email' => 'test@example.com',
         ];
 

@@ -13,34 +13,39 @@ final class ProfileUpdateUseCase
     /**
      * ログインユーザーのユーザー情報を更新する.
      *
-     * @param array $profile
+     * @param array $params
      *   ユーザー情報更新データ.
      * @return array
      *   更新後のユーザー情報.
      * @throws \Exception
      *   ログインユーザーが設定されていない場合に送出される.
      */
-    public function updateProfile(array $profile): array
+    public function updateProfile(array $params): array
     {
         /** @var \App\Models\User */
         $user = Auth::user();
 
-        if (key_exists('name', $profile)) {
-            $user->name = $profile['name'];
+        if (key_exists('username', $params)) {
+            $user->name = $params['username'];
         }
 
-        if (key_exists('email', $profile)) {
-            $user->email = $profile['email'];
+        if (key_exists('email', $params)) {
+            $user->email = $params['email'];
         }
 
-        if (key_exists('password', $profile)) {
-            $user->password = Hash::make($profile['password']);
+        if (key_exists('password', $params)) {
+            $user->password = Hash::make($params['password']);
         }
 
-        if (!empty($profile)) {
+        if (!empty($params)) {
             $user->save();
         }
 
-        return $user->only('name', 'email');
+        $profile = $user->only('name', 'email');
+
+        return [
+            'username' => $profile['name'],
+            'email' => $profile['email'],
+        ];
     }
 }

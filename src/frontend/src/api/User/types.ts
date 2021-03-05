@@ -13,7 +13,13 @@ export interface ProfileGetResponse {
   email: string;
 }
 
+export interface ProfileUpdateParameters {
+  username?: string;
+  email?: string;
+  password?: string;
+}
+
 export interface ProfileUpdateResponse {
-  name: string;
+  username: string;
   email: string;
 }

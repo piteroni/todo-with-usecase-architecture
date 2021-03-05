@@ -11,7 +11,7 @@
 
       <v-container>
         <v-row justify="center" align-content="center">
-          <v-form class="form">
+          <v-form class="form" ref="passwordUpdateForm">
             <div>
               <label for="password" class="col-md-3 label">
                 新しいパスワード
@@ -20,6 +20,7 @@
               <div class="col-md-12 pb-0">
                 <v-text-field
                   v-model="passwordInputValue"
+                  :rules="passwordRules"
                   class="password"
                   outlined
                   dense
@@ -49,10 +50,19 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import {
+  Vue, Component, Prop, Ref
+} from "vue-property-decorator";
+import { VForm } from "@/shared/vuetify";
 
 @Component
 export default class PasswordUpdateDialog extends Vue {
+  /**
+   * パスワード情報変更フォームへの参照を表す.
+   */
+  @Ref()
+  public readonly passwordUpdateForm?: VForm;
+
   /**
    * コンポーネントを表示する否かを表す.
    */
@@ -60,13 +70,31 @@ export default class PasswordUpdateDialog extends Vue {
   public readonly isOpen!: boolean;
 
   /**
-   * 親コンポーネントにて管理されているパスワード.
+   * 親コンポーネントにて管理されているパスワードを表す.
    */
   @Prop({ required: true, type: String })
   public readonly passwordOrigin!: string;
 
   /**
-   * 入力された新しいパスワード.
+   * メールアドレス欄のバリデーションルールを取得する.
+   */
+  public get passwordRules(): Array<Function> {
+    return [
+      (v: string) => !!v || "パスワードを入力してください",
+      (v: string) => v.length >= 8 || "パスワードは最低8文字以上入力してください",
+      (v: string) => this.passwordRegularExpresion.test(v) || "半角英数字記号をそれぞれ1種類以上含めてください"
+    ];
+  }
+
+  /**
+   * パスワードを構成する文字列に関する正規表現を取得する.
+   */
+  public get passwordRegularExpresion(): RegExp {
+    return /^(?=.*?[a-z])(?=.*?\d)(?=.*?[!-/:-@[-`{-~])[!-~]{0,}$/i;
+  }
+
+  /**
+   * 入力パスワード.
    */
   public passwordInputValue = "";
 
@@ -74,6 +102,10 @@ export default class PasswordUpdateDialog extends Vue {
    * 保存ボタンのクリックイベントをハンドリングする.
    */
   public save() {
+    if (!this.passwordUpdateForm?.validate()) {
+      return;
+    }
+
     this.$emit("update:password-origin", this.passwordInputValue);
     this.$emit("update:is-open", false);
   }
@@ -82,7 +114,8 @@ export default class PasswordUpdateDialog extends Vue {
    * キャンセルボタンのクリックイベントをハンドリングする.
    */
   public cancel() {
-    // @see .sync - vue 2.3
+    /* eslint-disable no-unused-expressions */
+    this.passwordUpdateForm?.reset();
     this.$emit("update:is-open", false);
     this.passwordInputValue = this.passwordOrigin;
   }

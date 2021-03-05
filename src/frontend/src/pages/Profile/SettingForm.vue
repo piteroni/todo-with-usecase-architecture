@@ -78,13 +78,15 @@
 
 <script lang="ts">
 import {
-  Vue, Component, Prop, Ref
+  Component, Prop, Ref, Mixins
 } from "vue-property-decorator";
 import { types } from "@/providers/types";
 import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
 import { VForm } from "@/shared/vuetify";
-import { Profile } from "./types";
+import { ProfileUpdateResponse } from "@/api/User/types";
+import { Profile, InputValue } from "./types";
+import { ProfileUpdateParamsPreparable } from "./ProfileUpdateParamsPreparable";
 import PasswordUpdateDialog from "./PasswordUpdateDialog.vue";
 
 @Component({
@@ -92,10 +94,13 @@ import PasswordUpdateDialog from "./PasswordUpdateDialog.vue";
     "password-update-dialog": PasswordUpdateDialog
   }
 })
-export default class Settings extends Vue {
+export default class SettingForm extends Mixins(ProfileUpdateParamsPreparable) {
   @Api(types.api.User)
   private readonly $user!: User;
 
+  /**
+   * ユーザー情報更新フォームへの参照を表す.
+   */
   @Ref()
   public readonly form!: VForm;
 
@@ -111,14 +116,14 @@ export default class Settings extends Vue {
   public isUpdating = false;
 
   /**
-   * パスワード更新ダイアログを表示するかを保持する.
+   * パスワード更新ダイアログを表示するかを表す.
    */
   public isOpenPasswordUpdateDialog = false;
 
   /**
    * 入力データを表す.
    */
-  public inputValues = {
+  public inputValues: InputValue = {
     username: "",
     email: "",
     password: "",
@@ -150,7 +155,7 @@ export default class Settings extends Vue {
   public async created() {
     this.inputValues.username = this.profile.name;
     this.inputValues.email = this.profile.email;
-    this.passwordStub = "dummyPassword";
+    this.passwordStub = "dummy-password";
 
     this.watchPasswordInputValue();
   }
@@ -159,8 +164,8 @@ export default class Settings extends Vue {
    * 入力用のパスワードの更新を監視する.
    */
   public async watchPasswordInputValue() {
-    this.$watch(() => this.inputValues.password, (newPassword: string) => {
-      this.passwordStub = newPassword;
+    this.$watch(() => this.inputValues.password, (password: string) => {
+      this.passwordStub = password;
     });
   }
 
@@ -172,26 +177,14 @@ export default class Settings extends Vue {
       return;
     }
 
-    const params: Record<string, string> = {};
-
     this.isUpdating = true;
 
-    if (this.inputValues.username !== this.profile.name) {
-      params.name = this.inputValues.username;
-    }
+    const params = this.prerpareUpdateProfileParams(this.inputValues, this.profile);
 
-    if (this.inputValues.email !== this.profile.email) {
-      params.email = this.inputValues.email;
-    }
-
-    if (this.inputValues.password !== "") {
-      params.password = this.inputValues.password;
-    }
-
-    let updatedProfile!: Profile;
+    let response!: ProfileUpdateResponse;
 
     try {
-      updatedProfile = await this.$user.updateProfile(params);
+      response = await this.$user.updateProfile(params);
     } catch (e) {
       console.error(e);
       this.$notify.error("問題が発生しました");
@@ -199,7 +192,12 @@ export default class Settings extends Vue {
       return;
     }
 
-    this.$emit("update:profile", updatedProfile);
+    const profile: Profile = {
+      name: response.username,
+      email: response.email
+    };
+
+    this.$emit("update:profile", profile);
 
     this.isUpdating = false;
 

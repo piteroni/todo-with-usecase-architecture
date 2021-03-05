@@ -3,7 +3,7 @@ import { injectable } from "inversify";
 import { throwApiError } from "@/api/handlers";
 import { api } from "@/api/base";
 import {
-  GetTasksResponse, ProfileGetResponse, ProfileUpdateResponse, TaskCreateResponse
+  GetTasksResponse, ProfileGetResponse, ProfileUpdateParameters, ProfileUpdateResponse, TaskCreateResponse
 } from "./types";
 
 export const resource = "/users";
@@ -32,9 +32,8 @@ export class User {
    * @throws {APIError}
    *   APIとの通信に失敗した場合に発生する.
    */
-  public async updateProfile(params: Record<string, string>): Promise<ProfileUpdateResponse> {
-    const data = { ...params };
-    const response = await api.put(`${resource}/current`, data).catch(throwApiError);
+  public async updateProfile(params: ProfileUpdateParameters): Promise<ProfileUpdateResponse> {
+    const response = await api.put(`${resource}/current`, params).catch(throwApiError);
 
     return (response as AxiosResponse<ProfileUpdateResponse>).data;
   }
