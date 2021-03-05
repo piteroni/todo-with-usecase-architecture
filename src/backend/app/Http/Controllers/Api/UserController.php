@@ -67,7 +67,7 @@ class UserController extends Controller
     {
         $profileUpdateUseCase = new ProfileUpdateUseCase();
 
-        $params = $request->only(['name', 'email', 'password']);
+        $params = $request->only(['username', 'email', 'password']);
 
         $profile = $profileUpdateUseCase->updateProfile($params);
 
