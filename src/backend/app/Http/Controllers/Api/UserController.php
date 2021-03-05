@@ -10,11 +10,13 @@ use App\UseCases\User\TaskListAcquisition\TaskListAcquisitionUseCase;
 use App\Http\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\TaskCreateRequest;
+use App\Http\Requests\User\ProfileUpdateRequest;
 use App\Http\Resources\User\CreatedTask;
 use App\Http\Resources\User\TaskList;
 use App\Exceptions\AuthorizationException;
 use App\Exceptions\Api\ForbiddenException;
 use App\Exceptions\Api\InternalServerErrorException;
+use App\UseCases\User\ProfileUpdate\ProfileUpdateUseCase;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Throwable;
@@ -49,6 +51,25 @@ class UserController extends Controller
         } catch (Throwable $e) {
             throw new InternalServerErrorException($operationId, '', $e);
         }
+
+        return response()->json($profile, HttpStatusCode::OK);
+    }
+
+    /**
+     * ログインユーザーのユーザー情報を更新する.
+     *
+     * @param \App\Http\Requests\User\ProfileUpdateRequest $request
+     *   リクエストオブジェクト.
+     * @return \Illuminate\Http\JsonResponse
+     *   更新後のユーザー情報.
+     */
+    public function updateProfile(ProfileUpdateRequest $request): JsonResponse
+    {
+        $profileUpdateUseCase = new ProfileUpdateUseCase();
+
+        $params = $request->only(['name', 'email', 'password']);
+
+        $profile = $profileUpdateUseCase->updateProfile($params);
 
         return response()->json($profile, HttpStatusCode::OK);
     }
