@@ -30,5 +30,7 @@ final class TaskDeleteAuthorize
                 'userId' => $userId
             ]);
         }
+
+        // @codeCoverageIgnoreStart
     }
 }

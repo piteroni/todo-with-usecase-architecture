@@ -123,8 +123,6 @@ export default class Settings extends Vue {
    */
   public password = "";
 
-  private querys: Record<string, string> = {};
-
   public get initialPasswordValue(): string {
     return "dummyPassword";
   }
@@ -150,7 +148,7 @@ export default class Settings extends Vue {
   public async created() {
     this.inputValues.username = this.profile.name;
     this.inputValues.email = this.profile.email;
-    this.inputValues.newPassword = this.initialPasswordValue;
+    this.password = "dummyPassword";
 
     this.watchNewPassword();
   }
@@ -165,17 +163,22 @@ export default class Settings extends Vue {
    * 更新ボタンのクリックイベントをハンドリングする.
    */
   public async updateProfile(): Promise<void> {
-    if (this.profile.name !== this.inputValues.username) {
-      this.querys.name = this.inputValues.username;
+    const params: Record<string, string> = {};
+
+    if (this.inputValues.username !== this.profile.name) {
+      params.name = this.inputValues.username;
     }
 
-    if (this.profile.email !== this.inputValues.email) {
-      this.querys.email = this.inputValues.email;
+    if (this.inputValues.email !== this.profile.email) {
+      params.email = this.inputValues.email;
     }
 
-    if (this.initialPasswordValue !== this.inputValues.username) {
-      this.querys.password = this.inputValues.username;
+    if (this.inputValues.newPassword !== "") {
+      params.password = this.inputValues.newPassword;
     }
+
+    this.$user.updateProfile(params);
+    // propsをupdateする
   }
 
   /**

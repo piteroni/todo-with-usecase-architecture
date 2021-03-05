@@ -23,6 +23,19 @@ export class User {
   }
 
   /**
+   * ログインユーザーのユーザー情報を更新する.
+   *
+   * @param params
+   *   ユーザー情報更新パラメーター.
+   * @throws {APIError}
+   *   APIとの通信に失敗した場合に発生する.
+   */
+  public async updateProfile(params: Record<string, string>): Promise<void> {
+    const data = { ...params };
+    await api.put(`${resource}/current`, data).catch(throwApiError);
+  }
+
+  /**
    * タスクの作成を行う.
    *
    * @param taskName
