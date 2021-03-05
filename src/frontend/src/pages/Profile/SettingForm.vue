@@ -50,7 +50,7 @@
             <v-text-field
               class="hidden-password hiddenPassword"
               type="password"
-              v-model="password"
+              v-model="passwordStub"
               @click="updatePassword"
               readonly
               outlined
