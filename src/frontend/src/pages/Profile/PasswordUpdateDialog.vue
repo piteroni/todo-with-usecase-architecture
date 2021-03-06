@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="isOpen" persistent overlay-color="white" width="640px">
-    <v-card class="card">
+    <v-card class="card passwordUpdateDialog">
       <v-card-title class="card-title">
         <div class="card-title-text">
           パスワードを更新する
@@ -36,11 +36,11 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <div class="my-2 mr-2">
-          <v-btn class="mr-4" @click="cancel" :ripple="false">
+          <v-btn class="cancel mr-4" @click="cancel" :ripple="false">
             キャンセル
           </v-btn>
 
-          <v-btn color="primary" @click="save" :ripple="false">
+          <v-btn color="save primary" @click="save" :ripple="false">
             変更を保存
           </v-btn>
         </div>
@@ -76,13 +76,18 @@ export default class PasswordUpdateDialog extends Vue {
   public readonly passwordOrigin!: string;
 
   /**
+   * 入力パスワード.
+   */
+  public passwordInputValue = "";
+
+  /**
    * メールアドレス欄のバリデーションルールを取得する.
    */
   public get passwordRules(): Array<Function> {
     return [
       (v: string) => !!v || "パスワードを入力してください",
-      (v: string) => v.length >= 8 || "パスワードは最低8文字以上入力してください",
-      (v: string) => this.passwordRegularExpresion.test(v) || "半角英数字記号をそれぞれ1種類以上含めてください"
+      (v: string) => (!!v && v.length >= 8) || "パスワードは最低8文字以上入力してください",
+      (v: string) => (!!v && this.passwordRegularExpresion.test(v)) || "半角英数字記号をそれぞれ1種類以上含めてください"
     ];
   }
 
@@ -92,11 +97,6 @@ export default class PasswordUpdateDialog extends Vue {
   public get passwordRegularExpresion(): RegExp {
     return /^(?=.*?[a-z])(?=.*?\d)(?=.*?[!-/:-@[-`{-~])[!-~]{0,}$/i;
   }
-
-  /**
-   * 入力パスワード.
-   */
-  public passwordInputValue = "";
 
   /**
    * 保存ボタンのクリックイベントをハンドリングする.
