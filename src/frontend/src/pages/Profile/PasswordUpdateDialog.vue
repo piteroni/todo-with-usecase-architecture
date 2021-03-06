@@ -50,13 +50,12 @@
 </template>
 
 <script lang="ts">
-import {
-  Vue, Component, Prop, Ref
-} from "vue-property-decorator";
+import { Component, Prop, Ref, Mixins } from "vue-property-decorator";
 import { VForm } from "@/shared/vuetify";
+import { PasswordRule } from "./PasswordRule";
 
 @Component
-export default class PasswordUpdateDialog extends Vue {
+export default class PasswordUpdateDialog extends Mixins(PasswordRule) {
   /**
    * パスワード情報変更フォームへの参照を表す.
    */
@@ -79,24 +78,6 @@ export default class PasswordUpdateDialog extends Vue {
    * 入力パスワード.
    */
   public passwordInputValue = "";
-
-  /**
-   * メールアドレス欄のバリデーションルールを取得する.
-   */
-  public get passwordRules(): Array<Function> {
-    return [
-      (v: string) => !!v || "パスワードを入力してください",
-      (v: string) => (!!v && v.length >= 8) || "パスワードは最低8文字以上入力してください",
-      (v: string) => (!!v && this.passwordRegularExpresion.test(v)) || "半角英数字記号をそれぞれ1種類以上含めてください"
-    ];
-  }
-
-  /**
-   * パスワードを構成する文字列に関する正規表現を取得する.
-   */
-  public get passwordRegularExpresion(): RegExp {
-    return /^(?=.*?[a-z])(?=.*?\d)(?=.*?[!-/:-@[-`{-~])[!-~]{0,}$/i;
-  }
 
   /**
    * 保存ボタンのクリックイベントをハンドリングする.

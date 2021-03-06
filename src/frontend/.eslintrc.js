@@ -23,7 +23,8 @@ module.exports = {
     "comma-dangle": "off",
     "arrow-parens": "off",
     "no-plusplus": "off",
-    "quote-props": "off"
+    "quote-props": "off",
+    "object-curly-newline": "off"
   },
   overrides: [
     {

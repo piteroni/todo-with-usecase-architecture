@@ -3,6 +3,8 @@ import Vuetify from "vuetify";
 import { createLocalVue, mount } from "@vue/test-utils";
 import PasswordUpdateDialog from "@/pages/Profile/PasswordUpdateDialog.vue";
 import { waitUntilForDone, waitUntilForMounted } from "@/shared/fixture";
+import { appendVApp } from "@/shared/vuetify";
+import { passwordRuleMock, PasswordRuleWithError } from "./fixtures/passwordUpdateDialog";
 
 Vue.use(Vuetify);
 
@@ -12,13 +14,15 @@ describe("PasswordUpdateDialog.vue", () => {
   let vuetify = new Vuetify();
 
   beforeAll(() => {
-    const app = document.createElement("div");
-    app.setAttribute("data-app", "true");
-    document.body.append(app);
+    appendVApp();
   });
 
   beforeEach(() => {
     vuetify = new Vuetify();
+  });
+
+  afterEach(() => {
+    passwordRuleMock.mockClear();
   });
 
   it("isOpen Propの値がtrueの場合ダイアログが表示される", async () => {
@@ -58,58 +62,21 @@ describe("PasswordUpdateDialog.vue", () => {
       propsData: {
         isOpen: true,
         passwordOrigin: ""
-      }
+      },
+      mixins: [
+        PasswordRuleWithError
+      ]
     });
 
     await waitUntilForMounted();
 
-    const input = async (v: string): Promise<void> => {
-      await passwordUpdateDialog.find(".password input").setValue(v);
-      await passwordUpdateDialog.find(".save").trigger("click");
+    await passwordUpdateDialog.find(".password input").setValue("");
+    await passwordUpdateDialog.find(".save").trigger("click");
 
-      await waitUntilForDone();
-    }
+    await waitUntilForDone();
 
-    const alertText = (): string => passwordUpdateDialog.find(".password div[role=\"alert\"] .v-messages__message").text();
-
-    await input("");
-
-    const emptyValueAlertText = alertText();
-
-    await input("123");
-
-    const minLengthAlertText = alertText();
-
-    const notFollowPolicyAlertTexts = [];
-
-    await input("password");
-
-    notFollowPolicyAlertTexts.push(alertText());
-
-    await input("1password");
-
-    notFollowPolicyAlertTexts.push(alertText());
-
-    await input("~password");
-
-    notFollowPolicyAlertTexts.push(alertText());
-
-    await input("~@19/3=%.;||");
-
-    notFollowPolicyAlertTexts.push(alertText());
-
-    // 空文字を入力した場合、エラー文が表示される.
-    expect(emptyValueAlertText).not.toBe("");
-    // 8文字以下の文字列を入力した場合、エラー文が表示される.
-    expect(minLengthAlertText).not.toBe("");
-    // 数字記号が含まれていない文字列を入力した場合、エラー文が表示される.
-    expect(notFollowPolicyAlertTexts[0]).not.toBe("");
-    // 記号が含まれていない文字列を入力した場合、エラー文が表示される.
-    expect(notFollowPolicyAlertTexts[1]).not.toBe("");
-    // 数字が含まれていない文字列を入力した場合、エラー文が表示される.
-    expect(notFollowPolicyAlertTexts[2]).not.toBe("");
-    // 半角英字が含まれていない文字列を入力した場合、エラー文が表示される.
-    expect(notFollowPolicyAlertTexts[3]).not.toBe("");
+    expect(passwordRuleMock).toBeCalled();
+    expect(passwordUpdateDialog.find(".password div[role=\"alert\"] .v-messages__message").text()).toBe("validation-error");
   });
 
   it("保存ボタンを押下した場合に、パスワードの保存処理が行われる", async () => {
@@ -140,7 +107,10 @@ describe("PasswordUpdateDialog.vue", () => {
       propsData: {
         isOpen: true,
         passwordOrigin: ""
-      }
+      },
+      mixins: [
+        PasswordRuleWithError
+      ]
     });
 
     await waitUntilForMounted();
@@ -148,6 +118,7 @@ describe("PasswordUpdateDialog.vue", () => {
     await passwordUpdateDialog.find(".password input").setValue("");
     await passwordUpdateDialog.find(".save").trigger("click");
 
+    expect(passwordRuleMock).toBeCalled();
     expect(passwordUpdateDialog.emitted("update:password-origin")).toBe(undefined);
     expect(passwordUpdateDialog.emitted("update:is-open")).toEqual(undefined);
   });
@@ -180,7 +151,10 @@ describe("PasswordUpdateDialog.vue", () => {
       propsData: {
         isOpen: true,
         passwordOrigin: "password-origin1!"
-      }
+      },
+      mixins: [
+        PasswordRuleWithError
+      ]
     });
 
     await waitUntilForMounted();
@@ -190,6 +164,7 @@ describe("PasswordUpdateDialog.vue", () => {
 
     await waitUntilForDone();
 
+    expect(passwordRuleMock).toBeCalled();
     expect(passwordUpdateDialog.find(".password div[role=\"alert\"]").exists()).toBeFalsy();
   });
 });

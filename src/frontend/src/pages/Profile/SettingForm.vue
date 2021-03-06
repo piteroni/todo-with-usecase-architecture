@@ -77,9 +77,7 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Ref, Mixins
-} from "vue-property-decorator";
+import { Component, Prop, Ref, Mixins } from "vue-property-decorator";
 import { types } from "@/providers/types";
 import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
