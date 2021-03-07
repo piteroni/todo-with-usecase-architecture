@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuetify from "vuetify";
-import VueRouter from "vue-router";
 import { createLocalVue, mount } from "@vue/test-utils";
 import { types } from "@/providers/types";
 import { container as vuexContextContainer } from "@/providers/containers/vuexContext";
@@ -12,7 +11,6 @@ import { createTaskMock, TaskActionsMock } from "./fixtures/shared";
 import { createTaskMockWithException, TaskActionsMockWithException } from "./fixtures/taskCreateForm";
 
 Vue.use(Vuetify);
-Vue.use(VueRouter);
 
 const localVue = createLocalVue();
 

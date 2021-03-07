@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="settingForm">
     <password-update-dialog :is-open.sync="isOpenPasswordUpdateDialog" :password-origin.sync="inputValues.password" />
 
     <v-form ref="form" lazy-validation class="mb-6">
@@ -81,7 +81,7 @@ import { Component, Prop, Ref, Mixins } from "vue-property-decorator";
 import { types } from "@/providers/types";
 import { Api } from "@/providers/containers/api";
 import { User } from "@/api/User";
-import { VForm } from "@/shared/vuetify";
+import { VForm, VTextRule, required } from "@/shared/vuetify";
 import { ProfileUpdateResponse } from "@/api/User/types";
 import { Profile, InputValue } from "./types";
 import { ProfileUpdateParamsPreparable } from "./ProfileUpdateParamsPreparable";
@@ -135,18 +135,18 @@ export default class SettingForm extends Mixins(ProfileUpdateParamsPreparable) {
   /**
    * ユーザー名欄のバリデーションルールを取得する.
    */
-  public get usernameRules(): Array<Function> {
+  public get usernameRules(): VTextRule[] {
     return [
-      (v: string) => !!v || "ユーザ名を入力してください",
+      (v: string | undefined) => required(v, "ユーザー名を入力してください"),
     ];
   }
 
   /**
    * メールアドレス欄のバリデーションルールを取得する.
    */
-  public get emailRules(): Array<Function> {
+  public get emailRules(): VTextRule[] {
     return [
-      (v: string) => !!v || "メールアドレスを入力してください",
+      (v: string | undefined) => required(v, "メールアドレスを入力してください"),
     ];
   }
 
@@ -216,5 +216,15 @@ export default class SettingForm extends Mixins(ProfileUpdateParamsPreparable) {
   font-size: 14.5px;
   font-weight: 400;
   margin-top: 10px;
+}
+
+.hidden-password .v-text-field input {
+  cursor: pointer !important;
+}
+</style>
+
+<style>
+.settingForm .hidden-password input {
+  cursor: pointer !important;
 }
 </style>
