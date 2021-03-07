@@ -177,7 +177,7 @@ export default class SettingForm extends Mixins(ProfileUpdateParamsPreparable) {
 
     this.isUpdating = true;
 
-    const params = this.prerpareUpdateProfileParams(this.inputValues, this.profile);
+    const params = this.prerpareProfileUpdateParams(this.inputValues, this.profile);
 
     let response!: ProfileUpdateResponse;
 

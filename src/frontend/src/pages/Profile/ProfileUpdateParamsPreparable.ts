@@ -14,7 +14,7 @@ export class ProfileUpdateParamsPreparable extends Vue {
    * @returns
    *   ユーザー情報更新パラメーター.
    */
-  protected prerpareUpdateProfileParams(inputs: InputValue, origin: Profile): ProfileUpdateParameters {
+  public prerpareProfileUpdateParams(inputs: InputValue, origin: Profile): ProfileUpdateParameters {
     const params: ProfileUpdateParameters = {};
 
     if (inputs.username !== origin.name) {

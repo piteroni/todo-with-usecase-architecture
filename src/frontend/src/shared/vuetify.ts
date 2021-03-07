@@ -16,7 +16,7 @@ export interface VTextRule {
 export const required = (v: string | undefined, message: string): VTextRuleResponse => !!v || message;
 
 /**
- * <v-app>に相当するDOMエレメントをbody elementに追加する.
+ * v-appに相当するDOMエレメントをbody elementに追加する.
  */
 export const appendVApp = (): void => {
   const app = document.createElement("div");
