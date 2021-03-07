@@ -13,6 +13,22 @@
 
     <v-card>
       <v-list class="py-0">
+        <v-list-item @click="manageTasks" :ripple="false" class="list-item">
+          <v-list-item-content>
+            <v-list-item-subtitle>
+              タスクの管理
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item @click="settings" :ripple="false" class="list-item">
+          <v-list-item-content>
+            <v-list-item-subtitle>
+              ユーザー設定
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+
         <v-list-item @click="logout" :ripple="false" class="list-item">
           <v-list-item-content>
             <v-list-item-subtitle>
@@ -43,6 +59,20 @@ export default class MoreMenu extends Vue {
    * メニューを表示するか否かを保持する.
    */
   public menu = false;
+
+  /**
+   * タスク管理ボタンのクリックイベントを処理する.
+   */
+  public async manageTasks(): Promise<void> {
+    this.$router.push({ name: routeNames.dashboard });
+  }
+
+  /**
+   * ユーザー設定ボタンのクリックイベントを処理する.
+   */
+  public async settings(): Promise<void> {
+    this.$router.push({ name: routeNames.profile });
+  }
 
   /**
    * ログアウトボタンのクリックイベントを処理する.

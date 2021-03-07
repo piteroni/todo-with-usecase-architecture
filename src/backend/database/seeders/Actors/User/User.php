@@ -11,7 +11,7 @@ class User
         return [
             'name' => 'User',
             'email' => 'user@example.com',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password1!')
         ];
     }
 }

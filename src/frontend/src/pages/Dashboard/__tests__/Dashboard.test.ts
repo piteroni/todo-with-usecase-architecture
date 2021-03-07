@@ -67,7 +67,7 @@ describe("Dashboard.vue", () => {
     const dashboard = shallowMount(Dashboard, {
       localVue,
       vuetify,
-      router
+      router,
     });
 
     // mountedが完了すると、テストは失敗する.
